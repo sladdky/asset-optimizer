@@ -15,7 +15,7 @@ export async function imageCallback({ relativePath, cwd, outputCwd, additionalDa
 
 	let widths: number[] = additionalData?.widths ?? [];
 	//0 = original without resize
-	widths = [2880, ...widths];
+	widths = [0, ...widths];
 
 	const promises = widths.map(async (width) => {
 		const basename = `${name}${width ? `@${width}` : ``}${ext.toLowerCase()}`;
