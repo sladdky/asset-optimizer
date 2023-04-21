@@ -21,8 +21,8 @@
 		"url": "git+ssh://git@github.com:sladdky/asset-optimizer.git"
 	},
 	"keywords": [
-		"mqtt",
-		"router"
+		"assets",
+		"optimize"
 	],
 	"author": "Michal Sladký",
 	"license": "MIT",
