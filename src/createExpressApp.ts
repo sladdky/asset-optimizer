@@ -11,10 +11,10 @@ export function createExpressApp(store: AssetOptimizerStore): AssetOptimizerExpr
         <form action="/" method="POST">
             <ul>
                 ${Object.entries(store.getStructure())
-					.map(
-						([path, data]) => `<li>${path} <input name="data[]" value='${JSON.stringify(data?.widths)}'></li>`
-					)
-					.join('')}
+									.map(
+										([path, data]) => `<li>${path} <input name="data[]" value='${JSON.stringify(data?.widths)}'></li>`
+									)
+									.join('')}
             </ul>
             <button>save</button>
         </form>

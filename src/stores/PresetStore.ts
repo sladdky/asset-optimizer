@@ -1,5 +1,5 @@
-import { Store } from './_Store'
+import { Store } from './_Store';
 
-type Preset = {}
+type Preset = Record<string, string>;
 
 export class PresetStore extends Store<Preset> {}

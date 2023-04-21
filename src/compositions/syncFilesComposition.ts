@@ -1,23 +1,23 @@
-import { getFiles } from '../common/getFiles'
-import { FileStore } from '../stores/FileStore'
+import { getFiles } from '../common/getFiles';
+import { FileStore } from '../stores/FileStore';
 
 type Props = {
-	fileStore: FileStore
-	cwd: string
-}
+	fileStore: FileStore;
+	cwd: string;
+};
 
 //synchronize files that are in store(loaded from json file) with filesystem structure
 export function syncFilesComposition({ fileStore, cwd }: Props) {
 	return () => {
 		const fsFiles = getFiles('', {
 			cwd,
-		})
+		});
 		for (const relativePath in fsFiles) {
-			const storeFile = fileStore.get(relativePath)
-			const fsFile = fsFiles[relativePath]
+			const storeFile = fileStore.get(relativePath);
+			const fsFile = fsFiles[relativePath];
 
 			if (!storeFile) {
-				fileStore.set(relativePath, fsFile)
+				fileStore.set(relativePath, fsFile);
 			}
 
 			if (storeFile && storeFile?.modified !== fsFiles[relativePath].modified) {
@@ -25,15 +25,15 @@ export function syncFilesComposition({ fileStore, cwd }: Props) {
 					...storeFile,
 					modified: fsFile.modified,
 					optimized: false,
-				})
+				});
 			}
 		}
 
-		const storeFiles = fileStore.getAll()
+		const storeFiles = fileStore.getAll();
 		for (const relativePath in storeFiles) {
 			if (!fsFiles[relativePath]) {
-				fileStore.delete(relativePath)
+				fileStore.delete(relativePath);
 			}
 		}
-	}
+	};
 }
