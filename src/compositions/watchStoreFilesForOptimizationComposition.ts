@@ -1,7 +1,6 @@
 import { optimizeFile } from '../common/optimizeFile';
 import { EmitsNeedsOptimizationProps, FileStore } from '../stores/FileStore';
 import { AssetOptimizerRules } from '../types';
-import { EMITS as FILESTORE_EMITS } from '../stores/FileStore';
 
 type Props = {
 	fileStore: FileStore;
@@ -55,7 +54,7 @@ export function watchStoreFilesForOptimizationComposition({ fileStore, cwd, outp
 			optimize(key);
 		};
 
-		fileStore.on(FILESTORE_EMITS.NEEDS_OPTIMIZATION, ({ key }: EmitsNeedsOptimizationProps) => {
+		fileStore.on('needs-optimization', ({ key }: EmitsNeedsOptimizationProps) => {
 			queue.push(key);
 			runQueue();
 		});

@@ -17,8 +17,9 @@ export type AssetOptimizerRule = {
 };
 export type AssetOptimizerRules = Record<string, AssetOptimizerRule>;
 export type AssetOptimizerConfig = {
-	cwd: string;
+	inputCwd: string;
 	outputCwd: string;
+	tempCwd: string;
 	rules: AssetOptimizerRules;
 };
 export type AssetOptimizerOptimizeFileOptions = {

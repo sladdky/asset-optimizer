@@ -1,54 +1,69 @@
+import path from 'path';
 import { AssetOptimizerConfig } from './types';
-import { DEFAULT_CONFIG } from './common/DEFAULT_CONFIG';
-import { FileStore } from './stores/FileStore';
-import { PresetStore } from './stores/PresetStore';
-import { syncFilesComposition } from './compositions/syncFilesComposition';
-import { watchStoreFilesForOptimizationComposition } from './compositions/watchStoreFilesForOptimizationComposition';
-import { watchFsFilesComposition } from './compositions/watchFsFilesComposition';
-import { loadStoresComposition } from './compositions/loadStoresComposition';
+import { FileStore, PresetStore } from './stores';
+import { loadStoresComposition, syncFilesComposition, watchFsFilesComposition, watchStoreFilesForOptimizationComposition } from './compositions';
+import { fallbackCallback, imageCallback, svgCallback, videoCallback } from './rules';
 
-export function createAssetOptimizer(customConfig: Partial<AssetOptimizerConfig> = {}) {
-	const config = {
-		...DEFAULT_CONFIG,
+type CustomConfig = Pick<AssetOptimizerConfig, 'inputCwd' | 'outputCwd' | 'tempCwd'> & Partial<AssetOptimizerConfig>;
+
+export function createAssetOptimizer(customConfig: CustomConfig) {
+	const config: AssetOptimizerConfig = {
 		...customConfig,
+		rules: {
+			'jpg|jpeg|png': {
+				callback: imageCallback,
+			},
+			'mov|mp4': {
+				callback: videoCallback,
+			},
+			svg: {
+				callback: svgCallback,
+			},
+			'': {
+				callback: fallbackCallback,
+			},
+			...customConfig.rules,
+		},
 	};
 
-	const fileStore = new FileStore('files.json');
-	const presetStore = new PresetStore('presets.json');
+	const fileStore = new FileStore(path.join(customConfig.tempCwd, 'files.json'));
+	const presetStore = new PresetStore(path.join(customConfig.tempCwd, 'preset.json'));
 
 	const watch = async () => {
-		console.log('1/5 Loading stores...');
+		console.log('1/6 Loading stores...');
 		const loadStores = loadStoresComposition({
 			fileStore,
 			presetStore,
 		});
 		await loadStores();
 
-		console.log('2/5 Watching for optimization requests...');
+		console.log('2/6 Watching for optimization requests...');
 		const watchForOptimization = watchStoreFilesForOptimizationComposition({
 			fileStore,
-			cwd: config.cwd,
+			cwd: config.inputCwd,
 			outputCwd: config.outputCwd,
 			rules: config.rules,
 		});
 		await watchForOptimization();
 
-		console.log('3/5 Synchronizing files to store...');
-		const syncFiles = syncFilesComposition({ fileStore, cwd: config.cwd });
+		console.log('3/6 Synchronizing files to store...');
+		const syncFiles = syncFilesComposition({ fileStore, cwd: config.inputCwd });
 		syncFiles();
 
-		console.log('4/5 Watching for changes in filesystem...');
+		console.log('4/6 Watching for changes in filesystem...');
 		const watchFs = watchFsFilesComposition({
 			fileStore,
-			cwd: config.cwd,
+			cwd: config.inputCwd,
 		});
 		watchFs();
 
-		// presetStore.on('change', () => {
-		// 	optimizeFiles()
-		// })
+		console.log('5/6 Starting websocket server... - cooming soon');
+		// const runWebsocket = runWebsocketComposition({
+			// 	port: 3003,
+			// });
+			// runWebsocket();
 
-		// console.log('Starting UI... http://localhost:3002')
+		console.log('5/6 Starting UI... - cooming soon');
 		// expressApp.start()
 	};
 

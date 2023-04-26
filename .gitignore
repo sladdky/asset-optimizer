@@ -119,3 +119,9 @@ dist
 .pnp.*
 
 .idea/
+
+
+dev/public/**/*
+dev/public-src/**/*
+dev/temp/**/*
+!.gitkeep
