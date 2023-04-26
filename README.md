@@ -1,6 +1,8 @@
 # ASSET-OPTIMIZER
 
-Optimizing assets - videos, photos, svgs from one folder to another (default: `public-src` to `public`)
+Optimizing videos, photos, svgs from one folder to another.
+
+**Supported extensions:** JPG, JPEG, PNG, SVG, MP4, MOV *(more expcted to be added)*
 
 <br>
 
@@ -28,8 +30,14 @@ npm install @sladdky/asset-optimizer --save-dev
 <a name="usage"></a>
 ## Usage
 ```sh
-import { createAssetOptimizer } from 'asset-optimizer';
+const { join } = require('path')
+import { createAssetOptimizer } from '@sladdky/asset-optimizer';
 
-const ao = createAssetOptimizer()
+const ao = createAssetOptimizer({
+    tempCwd: join(__dirname, 'temp'), //temporary cache files for ASSET-OPTIMIZED
+    inputCwd: join(__dirname, 'public-src'), //unoptimized files
+    outputCwd: join(__dirname, 'public'), //optimized files
+})
 ao.watch()
 ```
+
