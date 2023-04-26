@@ -30,7 +30,7 @@ npm install @sladdky/asset-optimizer --save-dev
 <a name="usage"></a>
 ## Usage
 ```sh
-const { join } = require('path')
+import { join } from 'path'
 import { createAssetOptimizer } from '@sladdky/asset-optimizer';
 
 const ao = createAssetOptimizer({
