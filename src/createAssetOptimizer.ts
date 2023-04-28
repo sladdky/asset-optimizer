@@ -20,10 +20,10 @@ export function createAssetOptimizer(customConfig: CustomConfig) {
 			svg: {
 				callback: svgCallback,
 			},
+			...customConfig.rules,
 			'': {
 				callback: fallbackCallback,
 			},
-			...customConfig.rules,
 		},
 	};
 

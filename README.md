@@ -11,9 +11,16 @@ There are other options like webpack, gulp, vite, nuxt/next plugins, etc. to opt
 
 <br>
 
+## Drawbacks
+- with current implementation doesn't scale well for infinite number of files.
+- for large projects I'd recommend to go with a framework or other asset building library
+
+<br>
+
 ## Table of contents
 * [installation](#installation)
 * [usage](#usage)
+* [custom rules](#custom-rules)
 
 
 <br>
@@ -30,14 +37,55 @@ npm install @sladdky/asset-optimizer --save-dev
 <a name="usage"></a>
 ## Usage
 ```sh
-import { join } from 'path'
-import { createAssetOptimizer } from '@sladdky/asset-optimizer';
+const { join } = require('path')
+const { createAssetOptimizer } = require('@sladdky/asset-optimizer')
 
 const ao = createAssetOptimizer({
-    tempCwd: join(__dirname, 'temp'), //temporary cache files for ASSET-OPTIMIZED
-    inputCwd: join(__dirname, 'public-src'), //unoptimized files
-    outputCwd: join(__dirname, 'public'), //optimized files
+    inputCwd: join(__dirname, 'public-src'), //raw, unoptimized files
+    outputCwd: join(__dirname, '../public'), //optimized files
 })
 ao.watch()
 ```
 
+## Custom rules
+```sh
+const ao = createAssetOptimizer({
+    ...,
+    rules: {
+        'jpg|png': async function({relativePath, inputCwd, outputCwd, additionalData}: AssetOptimizerRuleArgument) {
+            //
+            //...read file
+            //...use your favourite library
+            //...save file
+            //
+        }
+    }
+})
+```
+Full example
+```sh
+const { join, dirname } = require('path')
+const fs = require('fs/promises')
+const { createAssetOptimizer } = require('../lib/index')
+
+async function exampleTxtCallback({ relativePath, inputCwd, outputCwd }) {
+    const srcPath = join(inputCwd, relativePath)
+    const outputPath = join(outputCwd, relativePath)
+    await fs.mkdir(dirname(outputPath), {
+        recursive: true,
+    })
+    const content = await fs.readFile(srcPath)
+    await fs.writeFile(outputPath, `Optimized content:\n${content.subarray(0,10)}`)
+}
+
+const assetOptimizer = createAssetOptimizer({
+    inputCwd: join(__dirname, 'public-src'),
+    outputCwd: join(__dirname, 'public'),
+    rules: {
+        'txt': {
+            callback: exampleTxtCallback
+        }
+    }
+})
+assetOptimizer.watch()
+```
