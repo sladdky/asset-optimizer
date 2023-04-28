@@ -65,7 +65,8 @@ export class Store<TValue extends Record<string, any>, TSchema extends Schema = 
 		}
 
 		this._state[key] = value;
-		this.emit('change', { //@todo typescript autocomplete param overloading
+		this.emit('change', {
+			//@todo typescript autocomplete param overloading
 			key,
 			value,
 		});
