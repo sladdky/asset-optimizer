@@ -15,6 +15,7 @@ export function watchFsFilesComposition({ fileStore, cwd }: Props) {
 		const watcher = chokidar.watch('', {
 			cwd: cwd,
 			ignoreInitial: true,
+			ignored: ['.temp'],
 		});
 
 		const queue: Record<string, () => void> = {};

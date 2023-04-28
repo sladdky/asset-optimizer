@@ -11,6 +11,7 @@ export function syncFilesComposition({ fileStore, cwd }: Props) {
 	return () => {
 		const fsFiles = getFiles('', {
 			cwd,
+			ignoredPaths: ['.temp'],
 		});
 		for (const relativePath in fsFiles) {
 			const storeFile = fileStore.get(relativePath);

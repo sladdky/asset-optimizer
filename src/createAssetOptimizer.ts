@@ -1,10 +1,11 @@
 import path from 'path';
+import fs from 'fs';
 import { AssetOptimizerConfig } from './types';
 import { FileStore, PresetStore } from './stores';
 import { loadStoresComposition, syncFilesComposition, watchFsFilesComposition, watchStoreFilesForOptimizationComposition } from './compositions';
 import { fallbackCallback, imageCallback, svgCallback, videoCallback } from './rules';
 
-type CustomConfig = Pick<AssetOptimizerConfig, 'inputCwd' | 'outputCwd' | 'tempCwd'> & Partial<AssetOptimizerConfig>;
+type CustomConfig = Pick<AssetOptimizerConfig, 'inputCwd' | 'outputCwd'> & Partial<AssetOptimizerConfig>;
 
 export function createAssetOptimizer(customConfig: CustomConfig) {
 	const config: AssetOptimizerConfig = {
@@ -26,8 +27,11 @@ export function createAssetOptimizer(customConfig: CustomConfig) {
 		},
 	};
 
-	const fileStore = new FileStore(path.join(customConfig.tempCwd, 'files.json'));
-	const presetStore = new PresetStore(path.join(customConfig.tempCwd, 'preset.json'));
+	const tempCwd = path.join(customConfig.inputCwd, '/.temp');
+	fs.mkdirSync(tempCwd, { recursive: true });
+
+	const fileStore = new FileStore(path.join(tempCwd, '/files.json'));
+	const presetStore = new PresetStore(path.join(tempCwd, '/preset.json'));
 
 	const watch = async () => {
 		console.log('1/6 Loading stores...');
@@ -59,9 +63,9 @@ export function createAssetOptimizer(customConfig: CustomConfig) {
 
 		console.log('5/6 Starting websocket server... - cooming soon');
 		// const runWebsocket = runWebsocketComposition({
-			// 	port: 3003,
-			// });
-			// runWebsocket();
+		// 	port: 3003,
+		// });
+		// runWebsocket();
 
 		console.log('5/6 Starting UI... - cooming soon');
 		// expressApp.start()
