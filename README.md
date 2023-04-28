@@ -66,7 +66,7 @@ Full example
 ```sh
 const { join, dirname } = require('path')
 const fs = require('fs/promises')
-const { createAssetOptimizer } = require('../lib/index')
+const { createAssetOptimizer } = require('@sladdky/asset-optimizer')
 
 async function exampleTxtCallback({ relativePath, inputCwd, outputCwd }) {
     const srcPath = join(inputCwd, relativePath)
