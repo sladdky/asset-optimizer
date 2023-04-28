@@ -44,7 +44,7 @@ export function createAssetOptimizer(customConfig: CustomConfig) {
 		console.log('2/6 Watching for optimization requests...');
 		const watchForOptimization = watchStoreFilesForOptimizationComposition({
 			fileStore,
-			cwd: config.inputCwd,
+			inputCwd: config.inputCwd,
 			outputCwd: config.outputCwd,
 			rules: config.rules,
 		});

@@ -7,7 +7,7 @@ export type AssetOptimizerFile = {
 };
 export type AssetOptimizerRuleArgument = {
 	relativePath: string;
-	cwd: string;
+	inputCwd: string;
 	outputCwd: string;
 	additionalData?: Record<string, any>;
 };
@@ -22,7 +22,7 @@ export type AssetOptimizerConfig = {
 	rules: AssetOptimizerRules;
 };
 export type AssetOptimizerOptimizeFileOptions = {
-	cwd: string;
+	inputCwd: string;
 	outputCwd: string;
 	rules: AssetOptimizerRules;
 	additionalData?: Record<string, any>;

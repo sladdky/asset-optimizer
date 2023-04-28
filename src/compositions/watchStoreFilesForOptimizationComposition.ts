@@ -4,13 +4,13 @@ import { AssetOptimizerRules } from '../types';
 
 type Props = {
 	fileStore: FileStore;
-	cwd: string;
+	inputCwd: string;
 	outputCwd: string;
 	rules: AssetOptimizerRules;
 };
 
 //once store reports that a file needs optimization, run optimization
-export function watchStoreFilesForOptimizationComposition({ fileStore, cwd, outputCwd, rules }: Props) {
+export function watchStoreFilesForOptimizationComposition({ fileStore, inputCwd, outputCwd, rules }: Props) {
 	return () => {
 		const MAX_COUNT_IN_PARALLEL = 5;
 		const queue: string[] = [];
@@ -22,7 +22,7 @@ export function watchStoreFilesForOptimizationComposition({ fileStore, cwd, outp
 				count += 1;
 
 				const wasOptimized = await optimizeFile(relativePath, {
-					cwd,
+					inputCwd,
 					outputCwd,
 					rules,
 					additionalData: storeFile,

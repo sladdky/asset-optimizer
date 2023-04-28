@@ -2,7 +2,7 @@ import { AssetOptimizerOptimizeFileOptions } from '../types';
 import path from 'path';
 
 export async function optimizeFile(relativePath: string, options: AssetOptimizerOptimizeFileOptions) {
-	const srcPath = path.join(options.cwd, relativePath);
+	const srcPath = path.join(options.inputCwd, relativePath);
 	const ext = path.extname(srcPath);
 	if (!ext) {
 		return;
@@ -15,7 +15,7 @@ export async function optimizeFile(relativePath: string, options: AssetOptimizer
 			console.log(`Optimizing: ${srcPath}. Rule: ${key}`);
 			await callback({
 				relativePath,
-				cwd: options.cwd,
+				inputCwd: options.inputCwd,
 				outputCwd: options.outputCwd,
 				additionalData: options.additionalData,
 			});

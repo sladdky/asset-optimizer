@@ -6,8 +6,8 @@ import ffmpeg from 'fluent-ffmpeg';
 
 ffmpeg.setFfmpegPath(ffmpegInstaller.path);
 
-export async function videoCallback({ relativePath, cwd, outputCwd }: AssetOptimizerRuleArgument) {
-	const srcPath = path.join(cwd, relativePath);
+export async function videoCallback({ relativePath, inputCwd, outputCwd }: AssetOptimizerRuleArgument) {
+	const srcPath = path.join(inputCwd, relativePath);
 	const outputPath = path.join(outputCwd, relativePath);
 
 	await fs.mkdir(path.dirname(outputPath), {

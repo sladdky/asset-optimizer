@@ -2,8 +2,8 @@ import fs from 'fs/promises';
 import path from 'path';
 import { AssetOptimizerRuleArgument } from '../types';
 
-export async function fallbackCallback({ relativePath, cwd, outputCwd }: AssetOptimizerRuleArgument) {
-	const srcPath = path.join(cwd, relativePath);
+export async function fallbackCallback({ relativePath, inputCwd, outputCwd }: AssetOptimizerRuleArgument) {
+	const srcPath = path.join(inputCwd, relativePath);
 	const outputPath = path.join(outputCwd, relativePath);
 
 	await fs.mkdir(path.dirname(outputPath), {

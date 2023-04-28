@@ -3,10 +3,10 @@ import path from 'path';
 import fs from 'fs/promises';
 import sharp from 'sharp';
 
-export async function imageCallback({ relativePath, cwd, outputCwd, additionalData }: AssetOptimizerRuleArgument) {
+export async function imageCallback({ relativePath, inputCwd, outputCwd, additionalData }: AssetOptimizerRuleArgument) {
 	const { name, ext } = path.parse(relativePath);
 	const outputDir = path.dirname(path.join(outputCwd, relativePath));
-	const srcPath = path.join(cwd, relativePath);
+	const srcPath = path.join(inputCwd, relativePath);
 	const sharpedFile = sharp(srcPath);
 
 	await fs.mkdir(outputDir, {

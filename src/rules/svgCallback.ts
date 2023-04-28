@@ -3,8 +3,8 @@ import fs from 'fs/promises';
 import path from 'path';
 import svgo from 'svgo';
 
-export async function svgCallback({ relativePath, cwd, outputCwd }: AssetOptimizerRuleArgument) {
-	const srcPath = path.join(cwd, relativePath);
+export async function svgCallback({ relativePath, inputCwd, outputCwd }: AssetOptimizerRuleArgument) {
+	const srcPath = path.join(inputCwd, relativePath);
 	const outputPath = path.join(outputCwd, relativePath);
 
 	await fs.mkdir(path.dirname(outputPath), {
