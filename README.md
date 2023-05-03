@@ -2,7 +2,7 @@
 
 Optimizing videos, photos, svgs from one folder to another.
 
-**Supported extensions:** JPG, JPEG, PNG, SVG, MP4, MOV *(more expcted to be added)*
+**Supported extensions:** JPG, JPEG, PNG, TIFF, SVG, MP4, MOV *(more expcted to be added)*
 
 <br>
 

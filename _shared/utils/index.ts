@@ -1,0 +1,1 @@
+export {castToOneOf} from './castToOneOf'
