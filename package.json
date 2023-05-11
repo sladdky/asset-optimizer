@@ -2,8 +2,8 @@
 	"name": "@sladdky/asset-optimizer",
 	"version": "0.1.0",
 	"description": "Asset optimizer.",
-	"main": "lib/index.js",
-	"types": "lib/index.d.ts",
+	"main": "backend/lib/index.js",
+	"types": "backend/lib/index.d.ts",
 	"scripts": {
 		"build": "npm run build --prefix frontend & npm run build --prefix backend",
 		"dev": "npm run dev --prefix backend & npm run serve --prefix frontend",
