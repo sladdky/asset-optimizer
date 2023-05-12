@@ -9,33 +9,51 @@ Optimizing videos, photos, svgs from one folder to another.
 ## Why?
 There are other options like webpack, gulp, vite, nuxt/next plugins, etc. to optimize assets. This library makes optimizing assets framework agnostic, doesn't slow down building your app and gives you callbacks to customize what to do with the files and you don't have to rely on pre-coded options.
 
-<br>
-
-## Drawbacks
+**Drawbacks:**
 - with current implementation doesn't scale well for infinite number of files.
 - for large projects I'd recommend to go with a framework or other asset building library
 
 <br>
 
 ## Table of contents
-* [installation](#installation)
-* [usage](#usage)
-* [custom rules](#custom-rules)
+* CLI
+  * [installation](#cli-installation)
+  * [usage](#cli-usage)
+* Programmable
+  * [installation](#programmable-installation)
+  * [usage](#programmable-usage)
+  * [custom rules](#programmable-customrules)
 
 
 <br>
 
-
-<a name="installation"></a>
+# CLI
+<a name="cli-installation"></a>
 ## Instalation
 ```sh
-npm install @sladdky/asset-optimizer --save-dev
+npm install --location=global @sladdky/asset-optimizer
+```
+<a name="cli-usage"></a>
+## Usage
+```sh
+asset-optimizer
+            [--inputcwd=<path>]   default: public-src
+            [--outputcwd=<path>]  default: public
+            [--ui=<true|false>]   default: false
 ```
 
 <br>
 
-<a name="usage"></a>
+# Programmable
+
+<a name="programmable-installation"></a>
+## Instalation
+```sh
+npm install --save-dev @sladdky/asset-optimizer
+```
+<a name="programmable-usage"></a>
 ## Usage
+
 ```sh
 const { join } = require('path')
 const { createAssetOptimizer } = require('@sladdky/asset-optimizer')
@@ -43,26 +61,14 @@ const { createAssetOptimizer } = require('@sladdky/asset-optimizer')
 const ao = createAssetOptimizer({
     inputCwd: join(__dirname, 'public-src'), //raw, unoptimized files
     outputCwd: join(__dirname, '../public'), //optimized files
+    rules: {
+        // custom rules
+    }
 })
 ao.watch()
 ```
-
-## Custom rules
-```sh
-const ao = createAssetOptimizer({
-    ...,
-    rules: {
-        'jpg|png': async function({relativePath, inputCwd, outputCwd, additionalData}: AssetOptimizerRuleArgument) {
-            //
-            //...read file
-            //...use your favourite library
-            //...save file
-            //
-        }
-    }
-})
-```
-Full example
+<a name="programmable-customrules"></a>
+## Custom rule (example)
 ```sh
 const { join, dirname } = require('path')
 const fs = require('fs/promises')

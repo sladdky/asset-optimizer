@@ -1,6 +1,6 @@
 import { optimizeFile } from '../common/optimizeFile';
 import { FileStore } from '../stores/FileStore';
-import { AssetOptimizerRules } from '../../../_shared/types';
+import { AssetOptimizerRules } from '../_shared/types';
 
 type Props = {
 	fileStore: FileStore;

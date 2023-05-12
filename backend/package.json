@@ -1,11 +1,9 @@
 {
 	"name": "@sladdky/asset-optimizer-backend",
-	"version": "0.0.5",
 	"description": "Asset optimizer.",
 	"main": "lib/index.js",
-	"types": "lib/index.d.ts",
 	"scripts": {
-		"dev": "nodemon --watch \"../../frontend/dist/**/*\" --exec \"ts-node-dev dev/index.ts\"",
+		"dev": "ts-node-dev dev/index.ts",
 		"build": "tsc",
 		"format": "prettier --write \"src/**/*.(js|ts)\"",
 		"lint": "eslint src --ext .js,.ts",

@@ -1,4 +1,4 @@
-import { AssetOptimizerRuleArgument } from '../../../_shared/types';
+import { AssetOptimizerRuleArgument } from '../_shared/types';
 import path from 'path';
 import fs from 'fs/promises';
 import sharp from 'sharp';

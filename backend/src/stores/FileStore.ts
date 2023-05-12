@@ -1,4 +1,4 @@
-import { AssetOptimizerFile } from '../../../_shared/types';
+import { AssetOptimizerFile } from '../_shared/types';
 import { GenericChangeEvent, Store } from './_Store';
 
 type NeedsOptimizationEvent = {

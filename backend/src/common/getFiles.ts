@@ -1,4 +1,4 @@
-import { AssetOptimizerStructure } from '../../../_shared/types';
+import { AssetOptimizerStructure } from '../_shared/types';
 import fs from 'fs';
 import path from 'path';
 import { getFile } from './getFile';

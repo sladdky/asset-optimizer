@@ -1,6 +1,6 @@
 import { WebSocketServer } from 'ws';
 import { FileStore } from '../stores/FileStore';
-import { WS_MESSAGE, WS_MESSAGE_CALLBACKS, WS_MESSAGE_VALUES } from '../../../_shared/websockets';
+import { WS_MESSAGE, WS_MESSAGE_CALLBACKS, WS_MESSAGE_VALUES } from '../_shared/websockets';
 
 type Props = {
 	fileStore: FileStore;

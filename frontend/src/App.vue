@@ -1,5 +1,6 @@
 <template>
   <div>
+    <h1>ASSET-OPTIMIZER</h1>
     <ul>
       <li v-for="(file, key) in files" :key="key">{{ key }}</li>
     </ul>

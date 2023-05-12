@@ -1,6 +1,6 @@
 import path from 'path';
 import fs from 'fs';
-import { AssetOptimizerConfig } from '../../_shared/types';
+import { AssetOptimizerConfig } from './_shared/types';
 import { FileStore, PresetStore } from './stores';
 import { loadStoresComposition, syncFilesComposition, watchFsFilesComposition, watchStoreFilesForOptimizationComposition } from './compositions';
 import { fallbackCallback, imageCallback, svgCallback, videoCallback } from './rules';
@@ -8,6 +8,11 @@ import { runWebsocketServerComposition } from './compositions/runWebsocketServer
 import { runExpressAppComposition } from './compositions/runExpressAppComposition';
 
 type CustomConfig = Pick<AssetOptimizerConfig, 'inputCwd' | 'outputCwd'> & Partial<AssetOptimizerConfig>;
+
+type AssetOptimizerWatchOptions = {
+	isWebsocketServer: boolean;
+	isExpress: boolean;
+};
 
 export function createAssetOptimizer(customConfig: CustomConfig) {
 	const config: AssetOptimizerConfig = {
@@ -80,25 +85,23 @@ export function createAssetOptimizer(customConfig: CustomConfig) {
 		});
 		runExpressApp();
 
-		console.clear();
 		console.log(`Running asset-optimizer at http://localhost:${3010}/`);
 	};
 
 	return {
-		watch: async (
-			options = {
-				isfsWatcher: true,
+		watch: async (options: Partial<AssetOptimizerWatchOptions> = {}) => {
+			const _options: AssetOptimizerWatchOptions = {
 				isWebsocketServer: true,
 				isExpress: true,
-			}
-		) => {
-			if (options.isfsWatcher) {
-				await startFsWatcher();
-			}
-			if (options.isWebsocketServer) {
+				...options,
+			};
+
+			await startFsWatcher();
+
+			if (_options.isWebsocketServer) {
 				await startWebsocketServer();
 			}
-			if (options.isExpress) {
+			if (_options.isExpress) {
 				await startExpress();
 			}
 		},

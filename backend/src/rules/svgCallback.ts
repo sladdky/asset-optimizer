@@ -1,4 +1,4 @@
-import { AssetOptimizerRuleArgument } from '../../../_shared/types';
+import { AssetOptimizerRuleArgument } from '../_shared/types';
 import fs from 'fs/promises';
 import path from 'path';
 import svgo from 'svgo';

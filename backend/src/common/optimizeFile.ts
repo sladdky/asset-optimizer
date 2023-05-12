@@ -1,4 +1,4 @@
-import { AssetOptimizerOptimizeFileOptions } from '../../../_shared/types';
+import { AssetOptimizerOptimizeFileOptions } from '../_shared/types';
 import path from 'path';
 
 export async function optimizeFile(relativePath: string, options: AssetOptimizerOptimizeFileOptions) {
