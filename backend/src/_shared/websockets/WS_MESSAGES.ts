@@ -3,7 +3,7 @@ import { AssetOptimizerFile } from '../types';
 export type WS_MESSAGES = {
 	'request:filestore-items': {
 		name: 'request:filestore-items';
-		data?: {};
+		data?: null;
 	};
 	'request:filestore-itemupdate': {
 		name: 'request:filestore-itemupdate';
