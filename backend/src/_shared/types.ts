@@ -4,14 +4,14 @@ export type AssetOptimizerFile = {
 	modified: number;
 	isDir: boolean;
 	optimized?: boolean;
-	[key: string]: unknown;
+	[key: string]: any;
 };
 
 export type AssetOptimizerRuleArgument = {
 	relativePath: string;
 	inputCwd: string;
 	outputCwd: string;
-	additionalData?: Record<string, unknown>;
+	additionalData?: Record<string, any>;
 };
 
 export type AssetOptimizerRuleCallbackFnc = (arg: AssetOptimizerRuleArgument) => void;
@@ -32,7 +32,7 @@ export type AssetOptimizerOptimizeFileOptions = {
 	inputCwd: string;
 	outputCwd: string;
 	rules: AssetOptimizerRules;
-	additionalData?: Record<string, unknown>;
+	additionalData?: Record<string, any>;
 };
 
 export type AssetOptimizerStoreConfig = {
@@ -51,4 +51,4 @@ export type AssetOptimizerExpressApp = {
 	start: () => void;
 };
 
-export type Preset = Record<string, unknown>;
+export type Preset = Record<string, any>;
