@@ -8,14 +8,14 @@ type Props = {
 
 export function startUiComposition({ config }: Props) {
 	return () => {
-		console.log('1/1 UI:Starting express server...');
+		console.log(`1/1 UI:Starting express server at http://localhost:${config.port}`);
 
 		const app = express();
 
-		app.use(express.static(path.join(__dirname, '../../../../frontend/dist')));
+		app.use(express.static(path.join(__dirname, '../../../frontend/dist')));
 
 		app.get('/', (req, res) => {
-			res.sendFile(path.join(__dirname, '../../../../frontend/dist/index.html'));
+			res.sendFile(path.join(__dirname, '../../../frontend/dist/index.html'));
 		});
 
 		app.listen(config.port);

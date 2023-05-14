@@ -9,6 +9,7 @@ function main() {
     const args = {
         inputcwd: 'public-src',
         outputcwd: 'public',
+        api: 'false',
         ui: 'false',
         ...parseArgv()
     }
@@ -18,8 +19,8 @@ function main() {
         outputCwd: join(process.cwd(), args.outputcwd),
     })
     assetOptimizer.watch({
-        isWebsocketServer: args.ui === 'true',
-        isExpress: args.ui === 'true',
+        api: args.ui === 'true' || args.api === 'true',
+        ui: args.ui === 'true',
     })
 }
 
