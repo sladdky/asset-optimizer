@@ -1,108 +1,65 @@
-import path from 'path';
-import fs from 'fs';
-import { AssetOptimizerConfig } from './_shared/types';
-import { FileStore, PresetStore } from './stores';
-import { loadStoresComposition, syncFilesComposition, watchFsFilesComposition, watchStoreFilesForOptimizationComposition } from './compositions';
-import { fallbackCallback, imageCallback, svgCallback, videoCallback } from './rules';
-import { runWebsocketServerComposition } from './compositions/runWebsocketServerComposition';
-import { runExpressAppComposition } from './compositions/runExpressAppComposition';
-
-type CustomConfig = Pick<AssetOptimizerConfig, 'inputCwd' | 'outputCwd'> & Partial<AssetOptimizerConfig>;
+import { startCoreComposition, createStoreComposition } from './core/compositions';
+import { startApiComposition } from './api/compositions';
+import { AssetOptimizerApiConfig } from './api/types';
+import { startUiComposition } from './ui/compositions';
+import { AssetOptimizerUiConfig } from './ui/types';
+import { AssetOptimizerCoreConfig, AssetOptimizerRules } from './core/types';
 
 type AssetOptimizerWatchOptions = {
-	isWebsocketServer: boolean;
-	isExpress: boolean;
+	api: boolean;
+	ui: boolean;
 };
 
-export function createAssetOptimizer(customConfig: CustomConfig) {
-	const config: AssetOptimizerConfig = {
-		...customConfig,
-		rules: {
-			'jpg|jpeg|png': {
-				callback: imageCallback,
-			},
-			'mov|mp4': {
-				callback: videoCallback,
-			},
-			svg: {
-				callback: svgCallback,
-			},
-			...customConfig.rules,
-			'': {
-				callback: fallbackCallback,
-			},
-		},
-	};
+type AssetOptimizerConfig = Pick<AssetOptimizerCoreConfig, 'inputCwd' | 'outputCwd'> &
+	Partial<AssetOptimizerCoreConfig> &
+	Partial<{
+		api: AssetOptimizerApiConfig;
+		ui: AssetOptimizerUiConfig;
+	}>;
 
-	const tempCwd = path.join(customConfig.inputCwd, '/.temp');
-	fs.mkdirSync(tempCwd, { recursive: true });
+export function createAssetOptimizer(config: AssetOptimizerConfig) {
+	const { api: apiConfig = {}, ui: uiConfig = {}, ...coreConfig } = config;
 
-	const fileStore = new FileStore(path.join(tempCwd, '/files.json'));
-	const presetStore = new PresetStore(path.join(tempCwd, '/preset.json'));
+	const createStore = createStoreComposition({ cwd: coreConfig.inputCwd });
 
-	const startFsWatcher = async () => {
-		console.log('1/4 Loading stores...');
-		const loadStores = loadStoresComposition({
-			fileStore,
-			presetStore,
-		});
-		await loadStores();
+	const fileStore = createStore('FileStore', 'files.json');
 
-		console.log('2/4 Watching for optimization requests...');
-		const watchForOptimization = watchStoreFilesForOptimizationComposition({
-			fileStore,
-			inputCwd: config.inputCwd,
-			outputCwd: config.outputCwd,
-			rules: config.rules,
-		});
-		await watchForOptimization();
+	const startCore = startCoreComposition({
+		config: coreConfig,
+		fileStore,
+	});
 
-		console.log('3/4 Synchronizing files to store...');
-		const syncFiles = syncFilesComposition({ fileStore, cwd: config.inputCwd });
-		syncFiles();
-
-		console.log('4/4 Watching for changes in filesystem...');
-		const watchFsFiles = watchFsFilesComposition({
-			fileStore,
-			cwd: config.inputCwd,
-		});
-		watchFsFiles();
-	};
-
-	const startWebsocketServer = async () => {
-		console.log('1/2 Starting websocket server...');
-		const runWebsocketServer = runWebsocketServerComposition({
-			fileStore,
+	const startApi = startApiComposition({
+		config: {
 			port: 3011,
-		});
-		runWebsocketServer();
-	};
+			...apiConfig,
+		},
+		fileStore,
+	});
 
-	const startExpress = async () => {
-		console.log('2/2 Starting UI...');
-		const runExpressApp = runExpressAppComposition({
+	const startUi = startUiComposition({
+		config: {
 			port: 3010,
-		});
-		runExpressApp();
-
-		console.log(`Running asset-optimizer at http://localhost:${3010}/`);
-	};
+			...uiConfig,
+		},
+	});
 
 	return {
-		watch: async (options: Partial<AssetOptimizerWatchOptions> = {}) => {
+		async watch(options: Partial<AssetOptimizerWatchOptions> = {}) {
 			const _options: AssetOptimizerWatchOptions = {
-				isWebsocketServer: true,
-				isExpress: true,
+				api: true,
+				ui: true,
 				...options,
 			};
 
-			await startFsWatcher();
+			await startCore();
 
-			if (_options.isWebsocketServer) {
-				await startWebsocketServer();
+			if (_options.api) {
+				await startApi();
 			}
-			if (_options.isExpress) {
-				await startExpress();
+
+			if (_options.ui) {
+				await startUi();
 			}
 		},
 	};

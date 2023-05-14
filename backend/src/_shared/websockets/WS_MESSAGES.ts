@@ -1,8 +1,8 @@
 import { AssetOptimizerFile } from '../types';
 
 export type WS_MESSAGES = {
-	'request:filestore-items': {
-		name: 'request:filestore-items';
+	'request:filestore': {
+		name: 'request:filestore';
 		data?: any;
 	};
 	'request:filestore-itemupdate': {
@@ -12,8 +12,8 @@ export type WS_MESSAGES = {
 			value: AssetOptimizerFile;
 		};
 	};
-	'filestore-items': {
-		name: 'filestore-items';
+	filestore: {
+		name: 'filestore';
 		data: {
 			items: Record<string, AssetOptimizerFile>;
 		};
