@@ -1,36 +1,38 @@
-import { AssetOptimizerStructure } from '../types';
+import { AssetOptimizerFileMap } from '../types';
 import fs from 'fs';
 import path from 'path';
-import { getFile } from './getFile';
+import { getAoFile } from './getAoFile';
 
 type Options = {
 	cwd: string;
 	ignoredPaths?: string[];
 };
 
-export function getFiles(
+export function getAoFiles(
 	currPath: string,
 	options: Options = {
 		cwd: '',
 	}
-): AssetOptimizerStructure {
-	let structure: AssetOptimizerStructure = {};
+): AssetOptimizerFileMap {
+	let structure: AssetOptimizerFileMap = {};
 
 	const files = fs.readdirSync(path.join(options.cwd, currPath));
 	files.forEach((file: string) => {
 		const relativePath = path.join(currPath, file);
-		const fullPath = path.join(options.cwd, relativePath);
 
 		if (options.ignoredPaths && options.ignoredPaths.includes(relativePath)) {
 			return;
 		}
 
-		structure[relativePath] = getFile(fullPath);
+		structure[relativePath] = getAoFile({
+			cwd: options.cwd,
+			relativePath,
+		});
 
 		if (structure[relativePath].isDir) {
 			structure = {
 				...structure,
-				...getFiles(relativePath, options),
+				...getAoFiles(relativePath, options),
 			};
 		}
 	});

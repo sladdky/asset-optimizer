@@ -1,43 +1,59 @@
-import { startCoreComposition, createStoreComposition } from './core/compositions';
-import { startApiComposition } from './api/compositions';
+import { coreComposition } from './core/compositions';
+import { apiComposition } from './api/compositions';
+import { uiComposition } from './ui/compositions';
 import { AssetOptimizerApiConfig } from './api/types';
-import { startUiComposition } from './ui/compositions';
 import { AssetOptimizerUiConfig } from './ui/types';
-import { AssetOptimizerCoreConfig, AssetOptimizerRules } from './core/types';
+import { AssetOptimizerCoreConfig } from './core/types';
+import Database from './core/database';
+import { FileRepository, OptimizationRepository, RuleRepository } from './core/repositories';
+import path from 'path';
 
 type AssetOptimizerWatchOptions = {
 	api: boolean;
 	ui: boolean;
 };
 
-type AssetOptimizerConfig = Pick<AssetOptimizerCoreConfig, 'inputCwd' | 'outputCwd'> &
-	Partial<AssetOptimizerCoreConfig> &
-	Partial<{
-		api: AssetOptimizerApiConfig;
-		ui: AssetOptimizerUiConfig;
-	}>;
+type AssetOptimizerConfig = {
+	core: Pick<AssetOptimizerCoreConfig, 'inputCwd' | 'outputCwd'> & Partial<AssetOptimizerCoreConfig>;
+	api?: AssetOptimizerApiConfig;
+	ui?: AssetOptimizerUiConfig;
+};
 
 export function createAssetOptimizer(config: AssetOptimizerConfig) {
-	const { api: apiConfig = {}, ui: uiConfig = {}, ...coreConfig } = config;
+	const { core: coreConfig, api: apiConfig = {}, ui: uiConfig = {} } = config;
 
-	const createStore = createStoreComposition({ cwd: coreConfig.inputCwd });
+	const tempCwd = path.join(coreConfig.inputCwd, '/.temp');
 
-	const fileStore = createStore('FileStore', 'files.json');
+	const db = new Database({ cwd: tempCwd, dbName: 'main' });
+	db.load();
 
-	const startCore = startCoreComposition({
+	const fileRepository = new FileRepository(db, 'files');
+	const ruleRepository = new RuleRepository(db, 'rules');
+	const optimizationRepository = new OptimizationRepository(db, 'optimizations');
+
+	const core = coreComposition({
 		config: coreConfig,
-		fileStore,
+		components: {
+			fileRepository,
+			ruleRepository,
+			optimizationRepository,
+		},
 	});
 
-	const startApi = startApiComposition({
+	const api = apiComposition({
 		config: {
 			port: 3011,
 			...apiConfig,
 		},
-		fileStore,
+		components: {
+			fileRepository,
+			ruleRepository,
+			optimizationRepository,
+			ruleDefs: core.getRuleDefs(),
+		},
 	});
 
-	const startUi = startUiComposition({
+	const ui = uiComposition({
 		config: {
 			port: 3010,
 			...uiConfig,
@@ -52,15 +68,18 @@ export function createAssetOptimizer(config: AssetOptimizerConfig) {
 				...options,
 			};
 
-			await startCore();
+			await core.start();
 
 			if (_options.api) {
-				await startApi();
+				await api.start();
 			}
 
 			if (_options.ui) {
-				await startUi();
+				await ui.start();
 			}
 		},
+		core,
+		api,
+		ui,
 	};
 }

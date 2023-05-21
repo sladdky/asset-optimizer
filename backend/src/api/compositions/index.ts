@@ -1,2 +1,2 @@
 export { runWebsocketServerComposition } from './runWebsocketServerComposition';
-export { startApiComposition } from '../startApiComposition';
+export { apiComposition } from '../apiComposition';

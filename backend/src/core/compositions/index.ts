@@ -1,7 +1,4 @@
-export { loadStoresComposition } from './loadStoresComposition';
-// export { runWebsocketComposition } from './runWebsocketComposition';
-export { syncFilesComposition } from './syncFilesComposition';
+export { scanFsFilesComposition } from './scanFsFilesComposition';
 export { watchFsFilesComposition } from './watchFsFilesComposition';
-export { watchStoreFilesForOptimizationComposition } from './watchStoreFilesForOptimizationComposition';
-export { createStoreComposition } from './createStoreComposition';
-export { startCoreComposition } from '../startCoreComposition';
+export { watchForOptimizationComposition } from './watchForOptimizationComposition';
+export { coreComposition } from '../coreComposition';

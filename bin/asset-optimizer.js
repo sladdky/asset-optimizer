@@ -15,8 +15,10 @@ function main() {
     }
 
     const assetOptimizer = createAssetOptimizer({
-        inputCwd: join(process.cwd(), args.inputcwd),
-        outputCwd: join(process.cwd(), args.outputcwd),
+        core: {
+            inputCwd: join(process.cwd(), args.inputcwd),
+            outputCwd: join(process.cwd(), args.outputcwd),
+        }
     })
     assetOptimizer.watch({
         api: args.ui === 'true' || args.api === 'true',

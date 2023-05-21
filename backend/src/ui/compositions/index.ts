@@ -1,1 +1,1 @@
-export { startUiComposition } from '../startUiComposition';
+export { uiComposition } from '../uiComposition';

@@ -1,9 +1,9 @@
-import { AssetOptimizerRuleArgument } from '../types';
 import path from 'path';
 import fs from 'fs/promises';
 import sharp from 'sharp';
+import { AssetOptimizerRuleDefCallbackMeta, AssetOptimizerRuleProps } from '../types';
 
-export async function imageCallback({ relativePath, inputCwd, outputCwd, additionalData }: AssetOptimizerRuleArgument) {
+export async function imageCallback({ relativePath, inputCwd, outputCwd }: AssetOptimizerRuleProps): Promise<AssetOptimizerRuleDefCallbackMeta> {
 	const { name, ext } = path.parse(relativePath);
 	const outputDir = path.dirname(path.join(outputCwd, relativePath));
 	const srcPath = path.join(inputCwd, relativePath);
@@ -13,21 +13,11 @@ export async function imageCallback({ relativePath, inputCwd, outputCwd, additio
 		recursive: true,
 	});
 
-	let widths: number[] = additionalData?.widths ?? [];
-	//0 = original without resize
-	widths = [0, ...widths];
+	const basename = `${name}${ext.toLowerCase()}`;
+	const buffer = await sharpedFile.toBuffer();
+	await fs.writeFile(path.join(outputDir, basename), buffer);
 
-	const promises = widths.map(async (width) => {
-		const basename = `${name}${width ? `@${width}` : ``}${ext.toLowerCase()}`;
-
-		const _sharpedFile = sharpedFile.clone();
-		if (width) {
-			await _sharpedFile.resize({ width });
-		}
-
-		const buffer = await _sharpedFile.toBuffer();
-		fs.writeFile(path.join(outputDir, basename), buffer);
-	});
-
-	await Promise.all(promises);
+	return {
+		optimizations: [{ relativePath }],
+	};
 }

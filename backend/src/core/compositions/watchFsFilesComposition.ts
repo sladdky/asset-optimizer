@@ -1,16 +1,17 @@
 import { debounce } from 'lodash';
-import { getFile } from '../common/getFile';
-import { FileStore } from '../stores/FileStore';
+import { getAoFile } from '../common/getAoFile';
+import { FileRepository } from '../repositories/FileRepository';
 import chokidar from 'chokidar';
-import path from 'path';
 
 type Props = {
-	fileStore: FileStore;
 	cwd: string;
+	components: {
+		fileRepository: FileRepository;
+	};
 };
 
 //watch for changes in filesystem and update store accordingly
-export function watchFsFilesComposition({ fileStore, cwd }: Props) {
+export function watchFsFilesComposition({ cwd, components }: Props) {
 	return () => {
 		const watcher = chokidar.watch('', {
 			cwd: cwd,
@@ -19,21 +20,57 @@ export function watchFsFilesComposition({ fileStore, cwd }: Props) {
 		});
 
 		const queue: Record<string, () => void> = {};
-		const updateFileInStore = (relativePath: string) => {
+		const updateFile = (relativePath: string) => {
 			if (!queue[relativePath]) {
-				queue[relativePath] = debounce(() => {
-					fileStore.set(relativePath, getFile(path.join(cwd, relativePath)));
+				queue[relativePath] = debounce(async () => {
+					const aoFile = await components['fileRepository'].findOne({
+						query: {
+							relativePath,
+						},
+					});
+					if (!aoFile) {
+						return;
+					}
+					components['fileRepository'].update(aoFile);
 				}, 500);
 			}
 			queue[relativePath]();
 		};
 
 		watcher.on('add', (relativePath) => {
-			updateFileInStore(relativePath);
+			const aoFile = getAoFile({
+				cwd,
+				relativePath,
+			});
+			components['fileRepository'].create(aoFile);
 		});
 
-		watcher.on('change', (relativePath) => {
-			updateFileInStore(relativePath);
+		watcher.on('addDir', (relativePath) => {
+			const aoFile = getAoFile({
+				cwd,
+				relativePath,
+			});
+			components['fileRepository'].create(aoFile);
+		});
+
+		watcher.on('change', async (relativePath) => {
+			updateFile(relativePath);
+		});
+
+		watcher.on('unlink', (relativePath) => {
+			components['fileRepository'].remove({
+				query: {
+					relativePath,
+				},
+			});
+		});
+
+		watcher.on('unlinkDir', (relativePath) => {
+			components['fileRepository'].remove({
+				query: {
+					relativePath,
+				},
+			});
 		});
 	};
 }

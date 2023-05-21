@@ -1,4 +1,4 @@
-export { fallbackCallback } from './fallbackCallback';
-export { videoCallback } from './videoCallback';
-export { svgCallback } from './svgCallback';
-export { imageCallback } from './imageCallback';
+export { copyCallback as copyCallback } from './copyCallback';
+export { videoCallback as videoCallback } from './videoCallback';
+export { svgCallback as svgCallback } from './svgCallback';
+export { imageCallback as imageCallback } from './imageCallback';
