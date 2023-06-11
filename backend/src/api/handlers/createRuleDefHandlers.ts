@@ -1,4 +1,4 @@
-import { AssetOptimizerRuleDef, AssetOptimizerUiRuleDef, Response } from '../../types';
+import { AssetOptimizerRuleDef, Response } from '../../types';
 
 type Props = {
 	components: {
@@ -8,11 +8,10 @@ type Props = {
 
 export function createRuleDefHandlers({ components }: Props) {
 	return {
-		async listRuleDef(callback: (res: Response<AssetOptimizerUiRuleDef[]>) => void) {
+		listRuleDef(callback: (res: Response<AssetOptimizerRuleDef[]>) => void) {
 			callback({
 				data: components.ruleDefs,
 			});
-			//todo
 		},
 	};
 }

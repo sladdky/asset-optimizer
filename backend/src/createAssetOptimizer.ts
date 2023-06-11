@@ -5,7 +5,7 @@ import { AssetOptimizerApiConfig } from './api/types';
 import { AssetOptimizerUiConfig } from './ui/types';
 import { AssetOptimizerCoreConfig } from './core/types';
 import Database from './core/database';
-import { FileRepository, OptimizationRepository, RuleRepository } from './core/repositories';
+import { FileRepository, OptimizationRepository, RuleRepository, PresetRepository, PresetRuleRepository } from './core/repositories';
 import path from 'path';
 
 type AssetOptimizerWatchOptions = {
@@ -22,14 +22,15 @@ type AssetOptimizerConfig = {
 export function createAssetOptimizer(config: AssetOptimizerConfig) {
 	const { core: coreConfig, api: apiConfig = {}, ui: uiConfig = {} } = config;
 
-	const tempCwd = path.join(coreConfig.inputCwd, '/.temp');
+	const tempCwd = path.join(coreConfig.inputCwd, '/.ao-data');
 
-	const db = new Database({ cwd: tempCwd, dbName: 'main' });
-	db.load();
+	const db = new Database({ cwd: tempCwd, dbName: 'db', autosave: true });
 
 	const fileRepository = new FileRepository(db, 'files');
 	const ruleRepository = new RuleRepository(db, 'rules');
 	const optimizationRepository = new OptimizationRepository(db, 'optimizations');
+	const presetRepository = new PresetRepository(db, 'presets');
+	const presetRuleRepository = new PresetRuleRepository(db, 'preset-rules');
 
 	const core = coreComposition({
 		config: coreConfig,
@@ -37,6 +38,8 @@ export function createAssetOptimizer(config: AssetOptimizerConfig) {
 			fileRepository,
 			ruleRepository,
 			optimizationRepository,
+			presetRepository,
+			presetRuleRepository,
 		},
 	});
 
@@ -49,6 +52,8 @@ export function createAssetOptimizer(config: AssetOptimizerConfig) {
 			fileRepository,
 			ruleRepository,
 			optimizationRepository,
+			presetRepository,
+			presetRuleRepository,
 			ruleDefs: core.getRuleDefs(),
 		},
 	});
@@ -62,6 +67,8 @@ export function createAssetOptimizer(config: AssetOptimizerConfig) {
 
 	return {
 		async watch(options: Partial<AssetOptimizerWatchOptions> = {}) {
+			await db.load(); //db has to be loaded a awaited before using repositories !!!
+
 			const _options: AssetOptimizerWatchOptions = {
 				api: true,
 				ui: true,

@@ -16,11 +16,10 @@ export function createFileHandlers({ components }: Props) {
 		updateFile() {
 			//todo
 		},
-		async listFile(callback: (res: Response<AssetOptimizerFile[]>) => void) {
+		listFile(callback: (res: Response<AssetOptimizerFile[]>) => void) {
 			callback({
-				data: await components['fileRepository'].findAll(),
+				data: components['fileRepository'].findAll(),
 			});
-			//todo
 		},
 		uploadFile() {
 			//todo

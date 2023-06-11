@@ -49,19 +49,19 @@ export const rules = [
 	{
 		id: 1,
 		fileId: 2, //update on start
-		fileRelativePath: 'test-folder/test.txt',
+		relativePath: 'test-folder/test.txt',
 		ruleName: 'copy',
 	},
 	{
 		id: 2,
 		fileId: 2, //update on start
-		fileRelativePath: 'test-folder/test.txt',
+		relativePath: 'test-folder/test.txt',
 		ruleName: 'optimize',
 	},
 	{
 		id: 3,
 		fileId: 3, //update on start
-		fileRelativePath: 'test-folder/image.jpg',
+		relativePath: 'test-folder/image.jpg',
 		ruleName: 'optimize',
 	},
 ]

@@ -1,0 +1,71 @@
+<template>
+    <form class="PresetForm" @submit.prevent="handleSubmit">
+        <FormItem>
+            <FormInput type="text" :value="fields['pattern']" @frmchange="(value) => handleInputChange('pattern', value)" placeholder="*. | my-folder/*.\.jpg | ..." />
+            <FormInputErrors :errors="errors['pattern']" />
+        </FormItem>
+        <button class="PresetForm-button" type="submit">+create</button>
+    </form>
+</template>
+
+<script lang="ts" setup>
+import { FormItem, FormInput, FormInputErrors, useForm, FormSelect } from '@/form'
+import { object, string } from 'yup'
+import { AssetOptimizerPreset } from '@/types'
+import { useSocket } from '@/hooks'
+
+type FormFields = {
+    pattern: string
+}
+
+const schema = object<AssetOptimizerPreset>({
+    pattern: string()
+        .required('Pattern is required')
+})
+
+
+const { fields, errors, validate } = useForm<FormFields, typeof schema>(
+    {
+        fields: {
+            pattern: ''
+        },
+        schema
+    }
+)
+
+const handleInputChange = <TKey extends keyof FormFields>(prop: TKey, value: FormFields[TKey]) => {
+    errors[prop] = []
+    fields[prop] = value
+}
+
+const handleSubmit = async () => {
+    const isValid = await validate()
+    if (!isValid) {
+        return
+    }
+
+    socket.emit('preset:create', fields)
+    fields.pattern = ''
+}
+
+const { socket } = useSocket()
+</script>
+
+<style lang="stylus" scoped>
+.PresetForm
+    display grid
+    align-items flex-start
+    grid-template-columns 420px 100px 1fr
+    gap 10px
+    font-size 14px
+
+    &-button
+        padding 5px 10px
+        display flex
+        align-items center
+        justify-content center
+        background var(--color-primary)
+        color var(--color-primary-invert)
+        cursor pointer
+        border-radius var(--border-radius)
+</style>

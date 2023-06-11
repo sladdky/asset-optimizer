@@ -9,11 +9,10 @@ type Props = {
 
 export function createOptimizationHandlers({ components }: Props) {
 	return {
-		async listOptimization(callback: (res: Response<AssetOptimizerOptimization[]>) => void) {
+		listOptimization(callback: (res: Response<AssetOptimizerOptimization[]>) => void) {
 			callback({
-				data: await components['optimizationRepository'].findAll(),
+				data: components['optimizationRepository'].findAll(),
 			});
-			//todo
 		},
 	};
 }

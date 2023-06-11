@@ -1,31 +1,45 @@
 <template>
-    <article class="FileItem" :class="{ 'is-rulesetup-open': isRuleSetupOpen, 'has-rules': computedFile.rules.length }" v-if="!computedFile.isDir">
+    <article class="FileItem" :class="{ 'is-rulesetup-open': isRuleSetupOpen, 'has-rules': computedFile.rules.length }" v-if="!computedFile.file.isDir">
         <strong class="FileItem-relativePath FileItem-relativePath--originalFile">
-            <span>{{ computedFile.relativePath }}</span>
+            <span>{{ computedFile.file.relativePath }}</span>
         </strong>
         <div class="FileItem-ruleSetup">
             <div class="FileItem-rulesAndOptimizations">
                 <div class="FileItem-rule FileItem-rule--opener">
-                    <button class="FileItem-ruleSetupOpener" @click="isRuleSetupOpen = !isRuleSetupOpen"> {{ computedFile.rules.length ? computedFile.rules.length : isRuleSetupVisible ? '-' : '+' }} </button>
+                    <button class="FileItem-ruleSetupOpener" @click="isRuleSetupOpen = !isRuleSetupOpen"> {{ computedFile.rules.length ? computedFile.rules.length : isRuleSetupVisible ? '-' : '+' }}
+                        <Error align="block" message="" v-if="computedFile.hasErrors && !isRuleSetupOpen" />
+                    </button>
                 </div>
                 <div class="FileItem-optimizations">
-                    <strong class="FileItem-relativePath FileItem-relativePath--optimization" v-for="optimization in computedFile.rules.reduce<AssetOptimizerOptimization[]>((acc, rule) => { acc.push(...rule.optimizations); return acc }, [])" :key="optimization.id" v-if="!isRuleSetupVisible">
-                        <span>{{ computedFile.relativePath }}</span>
+                    <strong class="FileItem-relativePath FileItem-relativePath--optimization" v-for="optimization in computedFile.optimizations" :key="optimization.id" v-if="!isRuleSetupVisible">
+                        <span>{{ optimization.relativePath }}</span>
                     </strong>
                 </div>
             </div>
             <div class="FileItem-rulesAndOptimizations" v-for="rule in computedFile.rules" :key="rule.id" v-if="isRuleSetupVisible">
-                <div class="FileItem-rule"> {{ rule.ruleDefName }} {{ rule.state ? `${STATE_MESSAGES[rule.state]}` : '' }} </div>
+                <div class="FileItem-rule" :class="{ 'has-error': rule.state === 'error' }">
+                    <span class="FileItem-ruleName">
+                        <div class="FileItem-ruleControls">
+                            <button class="FileItem-reset" @click="emit('resetRule', rule.id)">R</button>
+                            <button class="FileItem-delete" v-if="!rule.presetRuleId" @click="emit('deleteRule', rule.id)">-</button>
+                        </div>
+                        <span>{{ rule.ruleName }}</span>
+                    </span>
+                    <span> {{ rule.state ? `${STATE_MESSAGES[rule.state]}` : `` }} </span>
+                    <component :is="RULE_DEFS_BY_NAME[rule.ruleName]?.component" :data="rule.data" @change="(data: any) => handleRuleChange({ ...rule, data })" />
+                    <Error align="block" v-if="rule.state === 'error' && rule.error" :message="rule.error" />
+                </div>
                 <div class="FileItem-optimizations">
-                    <strong class="FileItem-relativePath FileItem-relativePath--optimization" v-for="optimization in rule.optimizations" :key="optimization.id">
-                        <span>{{ computedFile.relativePath }}</span>
+                    <strong class="FileItem-relativePath FileItem-relativePath--optimization" v-for="optimization in computedFile.optimizations.filter(optimization => optimization.ruleId === rule.id)" :key="optimization.id">
+                        <span>{{ optimization.relativePath }}</span>
                     </strong>
                 </div>
             </div>
             <div class="FileItem-rulesAndOptimizations" v-if="isRuleSetupVisible">
                 <div class="FileItem-rule FileItem-rule--ruleDefs">
+                    <button class="FileItem-ruleDefsOpener">+</button>
                     <div class="FileItem-ruleDefs">
-                        <button v-for="ruleDef in computedFile.ruleDefs" :key="ruleDef.name" @click="handleRuleDefClick(ruleDef)"> + {{ ruleDef.displayName }} </button>
+                        <button v-for="ruleDef in computedFile.ruleDefs" :key="ruleDef.ruleName" @click="handleRuleDefClick(ruleDef)"> + {{ ruleDef.ruleName }} </button>
                     </div>
                 </div>
                 <div class="FileItem-optimizations"> </div>
@@ -35,48 +49,63 @@
 </template>
 
 <script lang="ts" setup>
-import { AssetOptimizerOptimization, AssetOptimizerFile, AssetOptimizerRule, AssetOptimizerUiRuleDef } from '@/types'
-import { computed, ref } from 'vue'
-
-type ComputedRule = {
-    optimizations: AssetOptimizerOptimization[]
-} & AssetOptimizerRule
+import Error from './Error.vue'
+import { AssetOptimizerOptimization, AssetOptimizerFile, AssetOptimizerRule, AssetOptimizerRuleDef } from '@/types'
+import { computed, defineAsyncComponent, ref } from 'vue'
 
 export type ComputedRuleDef = {
     displayName: string
-    name: string,
-} & AssetOptimizerUiRuleDef
+    component: ReturnType<typeof defineAsyncComponent>
+} & AssetOptimizerRuleDef
 
 export type ComputedFile = {
-    rules: ComputedRule[]
+    file: AssetOptimizerFile,
+    rules: AssetOptimizerRule[]
+    optimizations: AssetOptimizerOptimization[]
     ruleDefs: ComputedRuleDef[]
-} & AssetOptimizerFile
+    hasErrors: boolean
+}
 
 const props = defineProps<{
-    computedFile: ComputedFile
+    computedFile: ComputedFile,
 }
 >()
 
 const STATE_MESSAGES: Record<string, string> = {
+    '': '',
     queued: '(queued)',
     optimizing: '(optimizing...)',
-    optimized: ''
+    optimized: '',
+    error: ''
 }
 
-const handleRuleDefClick = (ruleDef: AssetOptimizerUiRuleDef) => {
+const RULE_DEFS_BY_NAME = computed(() => props.computedFile.ruleDefs.reduce<Record<string, ComputedRuleDef>>((acc, ruleDef) => {
+    acc[ruleDef.ruleName] = ruleDef
+    return acc
+}, {}))
+
+const handleRuleDefClick = (ruleDef: AssetOptimizerRuleDef) => {
     emit('addRule', {
-        fileId: props.computedFile.id,
-        fileRelativePath: props.computedFile.relativePath,
-        ruleDefName: ruleDef.name,
+        fileId: props.computedFile.file.id,
+        relativePath: props.computedFile.file.relativePath,
+        ruleName: ruleDef.ruleName,
+        data: undefined
     })
+}
+
+const handleRuleChange = (data: AssetOptimizerRule) => {
+    emit('updateRule', data)
 }
 
 const emit = defineEmits<{
     (event: 'addRule', rule: Omit<AssetOptimizerRule, 'id'>): void
+    (event: 'deleteRule', id: number): void
+    (event: 'updateRule', rule: AssetOptimizerRule): void
+    (event: 'resetRule', id: number): void
 }>()
 
 const isRuleSetupOpen = ref(false)
-const isRuleSetupVisible = computed(() => !props.computedFile.isDir && isRuleSetupOpen.value && (props.computedFile.rules.length || props.computedFile.ruleDefs.length))
+const isRuleSetupVisible = computed(() => !props.computedFile.file.isDir && isRuleSetupOpen.value && (props.computedFile.rules.length || props.computedFile.ruleDefs.length))
 </script>
 
 <style lang="stylus">
@@ -95,8 +124,7 @@ const isRuleSetupVisible = computed(() => !props.computedFile.isDir && isRuleSet
         gap 10px
 
         span
-            overflow-y hidden
-            overflow-x scroll
+            overflow hidden
             display block
             padding-bottom 20px
 
@@ -109,6 +137,10 @@ const isRuleSetupVisible = computed(() => !props.computedFile.isDir && isRuleSet
                 margin-top .9em
 
         &--optimization
+            span
+                display flex
+                justify-content flex-end
+
             &:before
                 content ''
                 background #ddd
@@ -144,6 +176,18 @@ const isRuleSetupVisible = computed(() => !props.computedFile.isDir && isRuleSet
             flex 1 1 30px
             margin-top .9em
 
+        &:before
+            flex 0 0 30px
+
+        &.has-error
+            background #fdd
+            padding 5px 0
+
+        &--ruleDefs
+            margin-top 2px
+            &:hover
+                .FileItem-ruleDefs
+                    display flex
 
     &-ruleSetupOpener
         padding 5px 10px
@@ -152,16 +196,10 @@ const isRuleSetupVisible = computed(() => !props.computedFile.isDir && isRuleSet
         justify-content center
         background none
         cursor pointer
+        border-radius var(--border-radius)
 
         &:hover
             background #f4f4f4
-
-        &--black
-            background #e10
-            color #fff
-
-            &:hover
-                background #c00
 
     &-optimizations
         position relative
@@ -191,15 +229,62 @@ const isRuleSetupVisible = computed(() => !props.computedFile.isDir && isRuleSet
     &-ruleDefs
         display flex
         gap 3px
+        margin-left -38px
+        display none
 
         button
+            background var(--color-primary)
+            color var(--color-primary-invert)
             padding 3px 10px
-            background #000
-            color #fff
             cursor pointer
+            border-radius var(--border-radius)
+
+    &-ruleDefsOpener
+        background var(--color-primary)
+        color var(--color-primary-invert)
+        padding 3px 10px
+        border-radius var(--border-radius)
+
+    &-ruleName
+        position relative
+        flex 0 0 auto
+
+        &:not(:hover)
+            .FileItem-ruleControls
+                display none
+
+        &.has-error
+            &:after
+                content '!'
+                display inline-block
+                text-align center
+                background red
+                color #fff
+                width 1.5em
+                height 1.5em
+                border-radius 50%
+                margin-left 5px
+
+    &-ruleControls
+        position absolute
+        right 100%
+        gap 2px
+        display flex
+
+        button
+            width 20px
+            height 20px
+            background var(--color-accent)
+            color var(--color-accent-invert)
+
+    &-buttonDelete
+        background var(--color-accent)
+        border-radius var(--border-radius)
+        color #fff
+        cursor pointer
 
     &.is-rulesetup-open
-        margin-bottom 30px
+        padding-bottom 30px
 
         .FileItem-ruleSetup
             &:before
@@ -217,13 +302,18 @@ const isRuleSetupVisible = computed(() => !props.computedFile.isDir && isRuleSet
         .FileItem-rule--ruleDefs
             &:after
                 background none
-    &.has-rules
+
+    &:hover
+        .FileItem-relativePath
+            span
+                overflow-x auto
+
+    &.has-rules:not(.has-error)
         .FileItem-ruleSetupOpener
-            opacity .2
+            color #ddd
 
     &:not(.has-rules):not(.is-rulesetup-open)
         .FileItem-ruleSetupOpener
-            background #f00
-            color #fff
-
+            background var(--color-primary)
+            color var(--color-primary-invert)
 </style>

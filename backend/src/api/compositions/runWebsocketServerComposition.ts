@@ -1,9 +1,17 @@
 import { Server, ServerOptions } from 'socket.io';
 import { Server as HttpServer } from 'http';
-import { FileRepository, OptimizationRepository, RuleRepository } from '../../core/repositories';
+import { FileRepository, OptimizationRepository, PresetRepository, PresetRuleRepository, RuleRepository } from '../../core/repositories';
 import { AssetOptimizerApiClientEvents, AssetOptimizerApiServerEvents } from '../types';
-import { createFileHandlers, createRuleHandlers, createOptimizationHandlers, createRuleDefHandlers } from '../handlers';
-import { AssetOptimizerFile, AssetOptimizerOptimization, AssetOptimizerRule, AssetOptimizerRuleDef } from '../../types';
+import { createFileHandlers, createRuleHandlers, createOptimizationHandlers, createRuleDefHandlers, createPresetRuleHandlers } from '../handlers';
+import {
+	AssetOptimizerFile,
+	AssetOptimizerOptimization,
+	AssetOptimizerPreset,
+	AssetOptimizerPresetRule,
+	AssetOptimizerRule,
+	AssetOptimizerRuleDef,
+} from '../../types';
+import { createPresetHandlers } from '../handlers/createPresetHandlers';
 
 type Props = {
 	httpServer: HttpServer;
@@ -12,6 +20,8 @@ type Props = {
 		fileRepository: FileRepository;
 		ruleRepository: RuleRepository;
 		optimizationRepository: OptimizationRepository;
+		presetRepository: PresetRepository;
+		presetRuleRepository: PresetRuleRepository;
 		ruleDefs: AssetOptimizerRuleDef[];
 	};
 };
@@ -22,9 +32,11 @@ export function runWebsocketServerComposition({ components, httpServer, socketOp
 
 		io.on('connection', (socket) => {
 			const { uploadFile, updateFile, deleteFile, listFile, createFile } = createFileHandlers({ components });
-			const { listRule, deleteRule, updateRule, createRule } = createRuleHandlers({ components });
+			const { listRule, deleteRule, updateRule, createRule, resetRule } = createRuleHandlers({ components });
 			const { listOptimization } = createOptimizationHandlers({ components });
 			const { listRuleDef } = createRuleDefHandlers({ components });
+			const { listPreset, deletePreset, updatePreset, createPreset } = createPresetHandlers({ components });
+			const { listPresetRule, deletePresetRule, updatePresetRule, createPresetRule } = createPresetRuleHandlers({ components });
 
 			socket.on('file:list', listFile);
 			socket.on('file:delete', deleteFile);
@@ -36,6 +48,17 @@ export function runWebsocketServerComposition({ components, httpServer, socketOp
 			socket.on('rule:delete', deleteRule);
 			socket.on('rule:update', updateRule);
 			socket.on('rule:create', createRule);
+			socket.on('rule:reset', resetRule);
+
+			socket.on('preset:list', listPreset);
+			socket.on('preset:delete', deletePreset);
+			socket.on('preset:update', updatePreset);
+			socket.on('preset:create', createPreset);
+
+			socket.on('presetrule:list', listPresetRule);
+			socket.on('presetrule:delete', deletePresetRule);
+			socket.on('presetrule:update', updatePresetRule);
+			socket.on('presetrule:create', createPresetRule);
 
 			socket.on('optimization:list', listOptimization);
 
@@ -72,6 +95,28 @@ export function runWebsocketServerComposition({ components, httpServer, socketOp
 			});
 			components['optimizationRepository'].on('delete', (optimization: AssetOptimizerOptimization) => {
 				socket.emit('optimization:deleted', optimization);
+			});
+
+			//@todo emit,listeners by generic type??????
+			components['presetRepository'].on('create', (preset: AssetOptimizerPreset) => {
+				socket.emit('preset:created', preset);
+			});
+			components['presetRepository'].on('update', (preset: AssetOptimizerPreset) => {
+				socket.emit('preset:updated', preset);
+			});
+			components['presetRepository'].on('delete', (preset: AssetOptimizerPreset) => {
+				socket.emit('preset:deleted', preset);
+			});
+
+			//@todo emit,listeners by generic type??????
+			components['presetRuleRepository'].on('create', (presetRule: AssetOptimizerPresetRule) => {
+				socket.emit('presetrule:created', presetRule);
+			});
+			components['presetRuleRepository'].on('update', (presetRule: AssetOptimizerPresetRule) => {
+				socket.emit('presetrule:updated', presetRule);
+			});
+			components['presetRuleRepository'].on('delete', (presetRule: AssetOptimizerPresetRule) => {
+				socket.emit('presetrule:deleted', presetRule);
 			});
 		});
 	};

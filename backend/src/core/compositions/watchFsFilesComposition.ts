@@ -16,14 +16,14 @@ export function watchFsFilesComposition({ cwd, components }: Props) {
 		const watcher = chokidar.watch('', {
 			cwd: cwd,
 			ignoreInitial: true,
-			ignored: ['.temp'],
+			ignored: ['.ao-data'],
 		});
 
 		const queue: Record<string, () => void> = {};
 		const updateFile = (relativePath: string) => {
 			if (!queue[relativePath]) {
-				queue[relativePath] = debounce(async () => {
-					const aoFile = await components['fileRepository'].findOne({
+				queue[relativePath] = debounce(() => {
+					const aoFile = components['fileRepository'].findOne({
 						query: {
 							relativePath,
 						},
@@ -32,7 +32,7 @@ export function watchFsFilesComposition({ cwd, components }: Props) {
 						return;
 					}
 					components['fileRepository'].update(aoFile);
-				}, 500);
+				}, 500); //@todo debounce might not be enough, update triggers before fullcopy
 			}
 			queue[relativePath]();
 		};
@@ -58,7 +58,7 @@ export function watchFsFilesComposition({ cwd, components }: Props) {
 		});
 
 		watcher.on('unlink', (relativePath) => {
-			components['fileRepository'].remove({
+			components['fileRepository'].deleteWhere({
 				query: {
 					relativePath,
 				},
@@ -66,7 +66,7 @@ export function watchFsFilesComposition({ cwd, components }: Props) {
 		});
 
 		watcher.on('unlinkDir', (relativePath) => {
-			components['fileRepository'].remove({
+			components['fileRepository'].deleteWhere({
 				query: {
 					relativePath,
 				},

@@ -9,5 +9,5 @@ const ao = createAssetOptimizer({
 });
 
 ao.watch({
-	ui: true,
+	ui: false,
 });

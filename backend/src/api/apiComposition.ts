@@ -1,5 +1,5 @@
 import { createServer } from 'http';
-import { FileRepository, OptimizationRepository, RuleRepository } from '../core/repositories';
+import { FileRepository, OptimizationRepository, PresetRepository, PresetRuleRepository, RuleRepository } from '../core/repositories';
 import { runWebsocketServerComposition } from './compositions/runWebsocketServerComposition';
 import { AssetOptimizerApiConfig, AssetOptimizerRuleDef } from '../types';
 
@@ -9,6 +9,8 @@ type Props = {
 		fileRepository: FileRepository;
 		ruleRepository: RuleRepository;
 		optimizationRepository: OptimizationRepository;
+		presetRepository: PresetRepository;
+		presetRuleRepository: PresetRuleRepository;
 		ruleDefs: AssetOptimizerRuleDef[];
 	};
 };
@@ -32,6 +34,10 @@ export function apiComposition({ config, components }: Props) {
 			runWebsocketServer();
 
 			httpServer.listen(config.port);
+
+			process.on('exit', () => {
+				httpServer.close();
+			});
 		},
 	};
 }

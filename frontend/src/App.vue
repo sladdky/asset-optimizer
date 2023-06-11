@@ -1,13 +1,18 @@
 <template>
     <div>
-        <Header></Header>
-        <FileList></FileList>
+        <Header />
+        <Filter />
+        <Panel />
+        <FileList />
     </div>
 </template>
 
 <script lang="ts" setup>
+import Panel from './components/Panel.vue'
+import Filter from './components/Filter.vue'
 import Header from './components/Header.vue'
 import FileList from './components/FileList.vue'
+
 
 </script>
 
@@ -34,6 +39,33 @@ import FileList from './components/FileList.vue'
         url(./assets/fonts/muli/muli-semibold.woff) format("woff"),
         url(./assets/fonts/muli/muli-semibold.woff2) format("woff2")
     font-weight 400
+
+:root
+    --border-radius 4px
+    --color-primary #17232b
+    --color-primary-100 #e7f6ff
+    --color-primary-200 #d8e1eb
+    --color-primary-300 #747b80
+    --color-primary-400 #454f55
+    --color-primary-500 #17232b //100%
+    --color-primary-600 #121c22
+    --color-primary-700 #0e151a
+    --color-primary-800 #090e11
+    --color-primary-900 #050709
+
+    --color-primary-invert #e8e9ea
+    --color-primary-invert-100 #000000
+    --color-primary-invert-200 #050709
+    --color-primary-invert-300 #ffffff
+    --color-primary-invert-400 #ffffff
+    --color-primary-invert-500 #e8e9ea //100%
+    --color-primary-invert-600 #e8e9ea
+    --color-primary-invert-700 #e8e9ea
+    --color-primary-invert-800 #e8e9ea
+    --color-primary-invert-900 #e8e9ea
+
+    --color-accent #ac3d39
+    --color-accent-invert #ffffff
 
 
 *, *:before, *:after
@@ -87,9 +119,10 @@ html
     font-size 62.5%
 
 body
-    font-size 1.5rem
+    font-size 1.4rem
     line-height: (23 / 15)
     font-family 'Muli'
+    background #e7f6ff
 
     @media $large-up
         font-size 1.7rem

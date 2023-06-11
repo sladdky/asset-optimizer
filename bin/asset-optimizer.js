@@ -5,7 +5,10 @@ const { createAssetOptimizer } = require('../backend/lib')
 
 main()
 
-function main() {
+
+process.env.cli = true
+
+async function main() {
     const args = {
         inputcwd: 'public-src',
         outputcwd: 'public',
@@ -14,13 +17,13 @@ function main() {
         ...parseArgv()
     }
 
-    const assetOptimizer = createAssetOptimizer({
+    const ao = createAssetOptimizer({
         core: {
             inputCwd: join(process.cwd(), args.inputcwd),
             outputCwd: join(process.cwd(), args.outputcwd),
         }
     })
-    assetOptimizer.watch({
+    await ao.watch({
         api: args.ui === 'true' || args.api === 'true',
         ui: args.ui === 'true',
     })

@@ -52,10 +52,11 @@
 		"fluent-ffmpeg": "^2.1.2",
 		"lodash": "^4.17.21",
 		"lokijs": "^1.5.12",
+		"nanoid": "^3.3.6",
 		"sharp": "^0.32.0",
 		"socket.io": "^4.6.1",
 		"svgo": "^3.0.2",
-		"tiny-emitter": "^2.1.0"
+		"yup": "^1.2.0"
 	},
 	"files": [
 		"lib/**/*"

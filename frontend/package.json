@@ -9,12 +9,16 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@vueuse/core": "^10.1.2",
     "core-js": "^3.8.3",
+    "ramda": "^0.29.0",
     "socket.io-client": "^4.6.1",
-    "vue": "^3.2.13"
+    "vue": "^3.2.13",
+    "yup": "^1.2.0"
   },
   "devDependencies": {
     "@sladdky/asset-optimizer": "^0.1.4",
+    "@types/ramda": "^0.29.2",
     "@typescript-eslint/eslint-plugin": "^5.4.0",
     "@typescript-eslint/parser": "^5.4.0",
     "@vue/cli-plugin-babel": "~5.0.0",

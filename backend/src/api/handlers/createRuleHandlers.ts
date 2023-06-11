@@ -9,19 +9,26 @@ type Props = {
 
 export function createRuleHandlers({ components }: Props) {
 	return {
-		deleteRule() {
-			//todo
+		deleteRule(id: number) {
+			components['ruleRepository'].deleteById(id);
 		},
-		updateRule() {
-			//todo
+		updateRule(rule: AssetOptimizerRule) {
+			components['ruleRepository'].update(rule);
 		},
-		async listRule(callback: (res: Response<AssetOptimizerRule[]>) => void) {
+		listRule(callback: (res: Response<AssetOptimizerRule[]>) => void) {
 			callback({
-				data: await components['ruleRepository'].findAll(),
+				data: components['ruleRepository'].findAll(),
 			});
 		},
-		async createRule(rule: Omit<AssetOptimizerRule, 'id'>) {
-			await components['ruleRepository'].create(rule);
+		createRule(rule: Omit<AssetOptimizerRule, 'id'>) {
+			components['ruleRepository'].create(rule);
+		},
+		resetRule(id: number) {
+			const rule = components['ruleRepository'].findById(id);
+			if (rule) {
+				rule.state = '';
+				components['ruleRepository'].update(rule);
+			}
 		},
 	};
 }

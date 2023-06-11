@@ -59,10 +59,9 @@ const { join } = require('path')
 const { createAssetOptimizer } = require('@sladdky/asset-optimizer')
 
 const ao = createAssetOptimizer({
-    inputCwd: join(__dirname, 'public-src'), //raw, unoptimized files
-    outputCwd: join(__dirname, '../public'), //optimized files
-    rules: {
-        // custom rules
+    core: {
+        inputCwd: join(__dirname, 'public-src'), //input folder
+        outputCwd: join(__dirname, '../public'), //output folder
     }
 })
 ao.watch()
