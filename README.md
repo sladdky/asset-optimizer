@@ -65,32 +65,3 @@ const ao = createAssetOptimizer({
     }
 })
 ao.watch()
-```
-<a name="programmable-customrules"></a>
-## Custom rule (example)
-```sh
-const { join, dirname } = require('path')
-const fs = require('fs/promises')
-const { createAssetOptimizer } = require('@sladdky/asset-optimizer')
-
-async function exampleTxtCallback({ relativePath, inputCwd, outputCwd }) {
-    const srcPath = join(inputCwd, relativePath)
-    const outputPath = join(outputCwd, relativePath)
-    await fs.mkdir(dirname(outputPath), {
-        recursive: true,
-    })
-    const content = await fs.readFile(srcPath)
-    await fs.writeFile(outputPath, `Optimized content:\n${content.subarray(0,10)}`)
-}
-
-const assetOptimizer = createAssetOptimizer({
-    inputCwd: join(__dirname, 'public-src'),
-    outputCwd: join(__dirname, 'public'),
-    rules: {
-        'txt': {
-            callback: exampleTxtCallback
-        }
-    }
-})
-assetOptimizer.watch()
-```
