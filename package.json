@@ -1,9 +1,9 @@
 {
 	"name": "@sladdky/asset-optimizer",
-	"version": "0.3.1",
+	"version": "0.3.2",
 	"description": "Asset optimizer.",
-	"main": "backend/lib/backend/src/index.js",
-	"types": "backend/lib/backend/src/index.d.ts",
+	"main": "backend/lib/index.js",
+	"types": "backend/lib/index.d.ts",
 	"bin": {
 		"asset-optimizer": "bin/asset-optimizer.js"
 	},

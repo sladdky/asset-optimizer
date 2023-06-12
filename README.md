@@ -2,7 +2,8 @@
 
 Optimizing videos, photos, svgs from one folder to another.
 
-**Supported extensions:** JPG, JPEG, PNG, TIFF, SVG, MP4, MOV *(more expcted to be added)*
+**Supported extensions:**<br>
+JPG, JPEG, PNG, TIFF, SVG, MP4, MOV *...(more to be added)*
 
 <br>
 
@@ -10,22 +11,23 @@ Optimizing videos, photos, svgs from one folder to another.
 There are other options like webpack, gulp, vite, nuxt/next plugins, etc. to optimize assets. This library makes optimizing assets framework agnostic, doesn't slow down building your app and gives you callbacks to customize what to do with the files and you don't have to rely on pre-coded options.
 
 **Drawbacks:**
-- with current implementation doesn't scale well for infinite number of files.
-- for large projects I'd recommend to go with a framework or other asset building library
+- with current implementation doesn't scale well for infinite number of file => use for large projects is not suitable at the moment
 
 <br>
 
 ## Table of contents
-* CLI
-  * [installation](#cli-installation)
-  * [usage](#cli-usage)
-* Programmable
-  * [installation](#programmable-installation)
-  * [usage](#programmable-usage)
-  * [custom rules](#programmable-customrules)
-
+**CLI**
+* [installation](#cli-installation)
+* [usage](#cli-usage)
 
 <br>
+
+**Programmable**
+* [installation](#programmable-installation)
+* [usage](#programmable-usage)
+
+
+<br><br><br>
 
 # CLI
 <a name="cli-installation"></a>
@@ -60,8 +62,8 @@ const { createAssetOptimizer } = require('@sladdky/asset-optimizer')
 
 const ao = createAssetOptimizer({
     core: {
-        inputCwd: join(__dirname, 'public-src'), //input folder
-        outputCwd: join(__dirname, '../public'), //output folder
+        inputCwd: join(__dirname, 'public-src'),
+        outputCwd: join(__dirname, 'public'), //optimized|processed files
     }
 })
 ao.watch()
