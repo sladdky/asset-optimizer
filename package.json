@@ -25,8 +25,10 @@
 		"url": "git+ssh://git@github.com:sladdky/asset-optimizer.git"
 	},
 	"keywords": [
+		"asset",
 		"assets",
-		"optimize"
+		"optimize",
+		"optimizing"
 	],
 	"author": "Michal Sladký",
 	"license": "MIT",

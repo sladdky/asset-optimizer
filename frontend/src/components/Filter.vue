@@ -11,7 +11,7 @@
 <script lang="ts" setup>
 import { useFilter } from '@/hooks/useFilter'
 
-const {filter} = useFilter()
+const { filter } = useFilter()
 
 const handlePresetClick = () => {
     filter.isPresetsOpen = !filter.isPresetsOpen
@@ -25,13 +25,24 @@ const handlePresetClick = () => {
     position sticky
     z-index 1
     top 0
-    padding 10px 15px
+    padding 15px
     background var(--color-primary)
     color var(--color-primary-invert)
 
     &-presetOpener
-        background var(--color-primary-100)
-        color var(--color-primary-invert-100)
+        background var(--color-primary-400)
+        color #dddd
         cursor pointer
+        padding 2px 10px
+        border-radius var(--border-radius)
+
+    input
+        border-radius var(--border-radius)
+        padding 2px 10px
+        background var(--color-primary-400)
+        color var(--color-primary-invert-600)
+
+        &::placeholder
+            color var(--color-primary)
 
 </style>

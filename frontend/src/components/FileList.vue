@@ -124,6 +124,7 @@ onConnected(() => {
 
 <style lang="stylus" scoped>
 .FileList
+    padding 20px
     .FileItem
         margin-bottom 2px
 

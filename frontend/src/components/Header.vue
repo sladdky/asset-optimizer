@@ -9,11 +9,14 @@
 
 <style scoped lang="stylus">
 .Header
-    padding 15px 0 5px
+    padding 17px 0 0
+    margin-bottom -5px
     font-family 'WorkSans'
-    font-weight bold
+    font-weight 700
     text-align center
     background var(--color-primary)
-    color #fff
-    font-size 1rem
+    color var(--color-primary-400)
+    font-size .8rem
+    position relative
+    z-index 2
 </style>

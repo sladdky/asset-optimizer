@@ -1,16 +1,22 @@
 <template>
     <article class="PresetItem" :class="{ 'is-rulesetup-open': isRuleSetupOpen, 'has-rules': computedPreset.presetRules.length }">
         <span class="PresetItem-relativePath PresetItem-relativePath--originalFile">
-            <button class="PresetItem-delete" @click="emit('deletePreset', computedPreset.preset.id)">-</button> {{ computedPreset.preset.pattern }} </span>
-        <div class="PresetItem-ruleSetup">
+            <button class="PresetItem-delete" @click="emit('deletePreset', computedPreset.preset.id)">-</button>
+            <span>{{ computedPreset.preset.pattern }}</span>
+        </span>
+        <div class="PresetItem-toggler">
+            <button class="PresetItem-togglerButton" @click="isRuleSetupOpen = !isRuleSetupOpen"> {{ computedPreset.presetRules.length }} </button>
+        </div>
+        <div>
             <div class="PresetItem-rulesAndOptimizations">
-                <div class="PresetItem-rule PresetItem-rule--opener">
-                    <button class="PresetItem-ruleSetupOpener" @click="isRuleSetupOpen = !isRuleSetupOpen"> {{ computedPreset.presetRules.length ? computedPreset.presetRules.length : isRuleSetupVisible ? '-' : '+' }} </button>
-                </div>
-                <div class="PresetItem-optimizations">
+                <div class="PresetItem-rule PresetItem-rule--ruleDefs" v-if="isRuleSetupOpen || (!computedPreset.presetRules.length && !isRuleSetupOpen)">
+                    <button class="PresetItem-ruleDefsOpener">+</button>
+                    <div class="PresetItem-ruleDefs">
+                        <button v-for="ruleDef in computedPreset.ruleDefs" :key="ruleDef.ruleName" @click="handleRuleDefClick(ruleDef)"> + {{ ruleDef.ruleName }} </button>
+                    </div>
                 </div>
             </div>
-            <div class="PresetItem-rulesAndOptimizations" v-for="presetRule in computedPreset.presetRules" :key="presetRule.id" v-if="isRuleSetupVisible">
+            <div class="PresetItem-rulesAndOptimizations" v-for="presetRule in computedPreset.presetRules" :key="presetRule.id" v-if="isRuleSetupOpen">
                 <div class="PresetItem-rule">
                     <span class="PresetItem-ruleName">
                         <button class="PresetItem-delete" @click="emit('deletePresetRule', presetRule.id)">-</button>
@@ -18,17 +24,6 @@
                     </span>
                     <component :is="RULE_DEFS_BY_NAME[presetRule.ruleName].component" :data="presetRule.data" @change="(data: any) => handleRuleChange({ ...presetRule, data })" />
                 </div>
-                <div class="PresetItem-optimizations">
-                </div>
-            </div>
-            <div class="PresetItem-rulesAndOptimizations" v-if="isRuleSetupVisible">
-                <div class="PresetItem-rule PresetItem-rule--ruleDefs">
-                    <button class="PresetItem-ruleDefsOpener">+</button>
-                    <div class="PresetItem-ruleDefs">
-                        <button v-for="ruleDef in computedPreset.ruleDefs" :key="ruleDef.ruleName" @click="handleRuleDefClick(ruleDef)"> + {{ ruleDef.ruleName }} </button>
-                    </div>
-                </div>
-                <div class="PresetItem-optimizations"> </div>
             </div>
         </div>
     </article>
@@ -79,21 +74,32 @@ const emit = defineEmits<{
 }>()
 
 const isRuleSetupOpen = ref(false)
-const isRuleSetupVisible = computed(() => isRuleSetupOpen.value && (props.computedPreset.presetRules.length || props.computedPreset.ruleDefs.length))
 </script>
 
 <style lang="stylus">
+line(direction = 'horizontal')
+    if direction == 'vertical'
+        content ''
+        position absolute
+        top -.9em
+        bottom .6em
+        background #333
+        width 1px
+    else
+        content ''
+        background #333
+        height 1px
+        margin-top .9em
+
 .PresetItem
-    display flex
-    padding 0 20px
-    font-size 14px
+    display grid
+    grid-template-columns 385px 70px 1fr
 
     &-relativePath
         overflow hidden
         display flex
         align-items flex-start
         white-space nowrap
-        width 400px
         height 2em
         gap 10px
 
@@ -104,36 +110,40 @@ const isRuleSetupVisible = computed(() => isRuleSetupOpen.value && (props.comput
 
         &--originalFile
             &:after
-                content ''
-                background #ddd
-                height 1px
+                line()
                 flex 1 1 30px
-                margin-top .9em
 
-        &--optimization
-            span
-                display flex
-                justify-content flex-end
+    &-toggler
+        display flex
+        align-items flex-start
 
-            &:before
-                content ''
-                background #ddd
-                height 1px
-                flex 1 1 30px
-                margin-top .9em
+        &:before,
+        &:after
+            line()
+            flex 1 1 30px
 
-    &-ruleSetupPlaceholder
-        flex 1 1 0px
-        position relative
+    &-togglerButton
+        padding 3px 10px
+        display flex
+        align-items center
+        justify-content center
+        background none
+        cursor pointer
+        border-radius var(--border-radius)
 
-    &-ruleSetup
-        flex 1 1 0px
-        position relative
+        &:hover
+            background #000
+            color #fff
 
     &-rulesAndOptimizations
+        position relative
         display flex
         align-items flex-start
         justify-content space-between
+
+        &+&
+            &:before
+                line('vertical')
 
     &-rule
         display flex
@@ -142,15 +152,8 @@ const isRuleSetupVisible = computed(() => isRuleSetupOpen.value && (props.comput
         white-space nowrap
         gap 10px
 
-        &:before,
-        &:after
-            content ''
-            background #ddd
-            height 1px
-            flex 1 1 30px
-            margin-top .9em
-
         &:before
+            line()
             flex 0 0 30px
 
         &.has-error
@@ -160,45 +163,6 @@ const isRuleSetupVisible = computed(() => isRuleSetupOpen.value && (props.comput
             &:hover
                 .PresetItem-ruleDefs
                     display flex
-
-
-
-    &-ruleSetupOpener
-        padding 5px 10px
-        display flex
-        align-items center
-        justify-content center
-        background none
-        cursor pointer
-        border-radius var(--border-radius)
-
-        &:hover
-            background #f4f4f4
-
-    &-optimizations
-        position relative
-        width 400px
-        display flex
-        flex-flow column
-        white-space nowrap
-
-        &:before
-            content ''
-            position absolute
-            top .85em
-            bottom 1.1em
-            background #ddd
-            width 1px
-
-    &-optimization
-        display flex
-
-        &:before
-            content ''
-            background #ddd
-            height 1px
-            flex 1 1 30px
-            margin-top .9em
 
     &-ruleDefs
         display flex
@@ -228,18 +192,6 @@ const isRuleSetupVisible = computed(() => isRuleSetupOpen.value && (props.comput
             .PresetItem-delete
                 display none
 
-        &.has-error
-            &:after
-                content '!'
-                display inline-block
-                text-align center
-                background red
-                color #fff
-                width 1.5em
-                height 1.5em
-                border-radius 50%
-                margin-left 5px
-
     &-delete
         background: var(--color-accent);
         color: var(--color-accent-invert);
@@ -250,15 +202,6 @@ const isRuleSetupVisible = computed(() => isRuleSetupOpen.value && (props.comput
 
     &.is-rulesetup-open
         padding-bottom 30px
-
-        .PresetItem-ruleSetup
-            &:before
-                content ''
-                position absolute
-                top .85em
-                bottom 1.1em
-                background #ddd
-                width 1px
 
         .PresetItem-rule--opener
             &:before,&:after
@@ -273,14 +216,21 @@ const isRuleSetupVisible = computed(() => isRuleSetupOpen.value && (props.comput
             span
                 overflow-x auto
 
+    &:not(.has-error)
+        .PresetItem-togglerButton
+            color #666
 
-    &.has-rules:not(.has-error)
-        .PresetItem-ruleSetupOpener
-            color #ddd
+    &:not(.has-rules)
+        .PresetItem-togglerButton
+            display none
 
-    &:not(.has-rules):not(.is-rulesetup-open)
-        .PresetItem-ruleSetupOpener
-            background var(--color-primary)
-            color var(--color-primary-invert)
+        .PresetItem-toggler
+            &:after
+                content none
+
+    &:not(.is-rulesetup-open)
+        .PresetItem-toggler
+            &:after
+                opacity 0
 
 </style>

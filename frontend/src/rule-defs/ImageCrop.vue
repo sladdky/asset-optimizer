@@ -2,7 +2,7 @@
     <div class="ImageCrop">
         <div v-if="isCropOpen || data.size">
             <div class="ImageCrop-input ImageCrop-input--size">
-                <input type="text" placeholder="(W)x(H)" v-model="data.size">
+                <input type="text" placeholder="(W)x(H)" v-model="data.size" ref="inputSizeEl">
                 <select v-model="data.strategy">
                     <option value="exact">exact</option>
                     <option value="fit">fit</option>
@@ -28,14 +28,18 @@
 <script lang="ts" setup>
 import { AssetOptimizerRuleDefs } from '@/types'
 import debounce from 'lodash/debounce'
-import { ref, watch } from 'vue'
+import { nextTick, ref, watch } from 'vue'
 
 type Data = AssetOptimizerRuleDefs['imageCrop']['data']
 
+const inputSizeEl = ref<HTMLElement>()
 const isCropOpen = ref(false)
 
 const handleDefineCropClick = () => {
     isCropOpen.value = true
+    nextTick(() => {
+        inputSizeEl.value?.focus()
+    })
 }
 
 const handleCropClearClick = () => {

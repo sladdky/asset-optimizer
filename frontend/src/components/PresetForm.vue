@@ -20,7 +20,7 @@ type FormFields = {
 
 const schema = object<AssetOptimizerPreset>({
     pattern: string()
-        .required('Pattern is required')
+        .required('Regex pattern is required')
 })
 
 
@@ -55,7 +55,7 @@ const { socket } = useSocket()
 .PresetForm
     display grid
     align-items flex-start
-    grid-template-columns 420px 100px 1fr
+    grid-template-columns 425px 90px
     gap 10px
     font-size 14px
 

@@ -47,7 +47,7 @@ import FileList from './components/FileList.vue'
     --color-primary-200 #d8e1eb
     --color-primary-300 #747b80
     --color-primary-400 #454f55
-    --color-primary-500 #17232b //100%
+    --color-primary-500 #010101 //100%
     --color-primary-600 #121c22
     --color-primary-700 #0e151a
     --color-primary-800 #090e11
@@ -119,13 +119,10 @@ html
     font-size 62.5%
 
 body
-    font-size 1.4rem
+    font-size 1.5rem
     line-height: (23 / 15)
     font-family 'Muli'
-    background #e7f6ff
-
-    @media $large-up
-        font-size 1.7rem
+    background #fff
 
 p
     margin-bottom: (20 / 15em)

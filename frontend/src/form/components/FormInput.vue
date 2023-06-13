@@ -29,10 +29,9 @@ const model = computed({
 
 <style lang="stylus">
 .FormInput
-	border 1px solid #eee
-	background #fff
+	border 1px solid #999
+	background #999
 	box-shadow none
-	color $black
 	padding 0
 	border-radius 0
 	width 100%
@@ -46,13 +45,12 @@ const model = computed({
 
 	&:focus
 		border 1px solid rgba(#000, .1)
-		border-bottom-color $black
 		outline none
 		background-color white
 
 	&::placeholder
 		opacity .5
-		color $teal
+		color #333
 		font-family inherit
 
 		&:-webkit-autofill, &:-webkit-autofill:hover, &:-webkit-autofill:focus

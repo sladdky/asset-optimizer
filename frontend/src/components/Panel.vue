@@ -1,7 +1,7 @@
 <template>
     <div class="Panel" v-if="isOpen">
-        <PresetList v-if="filter.isPresetsOpen" />
         <PresetForm :rule-defs="ruleDefs" v-if="filter.isPresetsOpen" />
+        <PresetList v-if="filter.isPresetsOpen" />
     </div>
 </template>
 
@@ -34,13 +34,14 @@ onConnected(() => {
 
 <style lang="stylus" scoped>
 .Panel
-    display block
+    display flex
+    flex-flow column
+    gap 10px
     position sticky
     z-index 1
-    top 42px
-    padding 30px 0
-    margin 10px 10px 50px
-    background var(--color-primary-100)
-    border 2px solid var(--color-primary)
+    top 55px
+    padding 30px 20px
+    margin 0 0 50px
+    background var(--color-primary-400)
 
 </style>

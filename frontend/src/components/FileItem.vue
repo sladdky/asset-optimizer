@@ -1,27 +1,35 @@
 <template>
-    <article class="FileItem" :class="{ 'is-rulesetup-open': isRuleSetupOpen, 'has-rules': computedFile.rules.length }" v-if="!computedFile.file.isDir">
+    <article class="FileItem" :class="{ 'is-open': isOpen, 'has-rules': computedFile.rules.length, 'has-error': computedFile.hasErrors, 'has-optimizations': computedFile.optimizations.length }" v-if="!computedFile.file.isDir">
         <strong class="FileItem-relativePath FileItem-relativePath--originalFile">
             <span>{{ computedFile.file.relativePath }}</span>
         </strong>
-        <div class="FileItem-ruleSetup">
-            <div class="FileItem-rulesAndOptimizations">
-                <div class="FileItem-rule FileItem-rule--opener">
-                    <button class="FileItem-ruleSetupOpener" @click="isRuleSetupOpen = !isRuleSetupOpen"> {{ computedFile.rules.length ? computedFile.rules.length : isRuleSetupVisible ? '-' : '+' }}
-                        <Error align="block" message="" v-if="computedFile.hasErrors && !isRuleSetupOpen" />
-                    </button>
+        <div class="FileItem-toggler">
+            <button class="FileItem-togglerButton" @click="isOpen = !isOpen"> {{ computedFile.rules.length }}
+                <Error align="block" message="" v-if="computedFile.hasErrors && !isOpen" />
+            </button>
+        </div>
+        <div>
+            <div class="FileItem-rulesAndOptimizations FileItem-rulesAndOptimizations--ruleDefs">
+                <div class="FileItem-rule">
+                    <template v-if="isOpen || (!computedFile.rules.length && !isOpen)">
+                        <button class="FileItem-ruleDefsOpener">+</button>
+                        <div class="FileItem-ruleDefs">
+                            <button v-for="ruleDef in computedFile.ruleDefs" :key="ruleDef.ruleName" @click="handleRuleDefClick(ruleDef)"> + {{ ruleDef.ruleName }} </button>
+                        </div>
+                    </template>
                 </div>
                 <div class="FileItem-optimizations">
-                    <strong class="FileItem-relativePath FileItem-relativePath--optimization" v-for="optimization in computedFile.optimizations" :key="optimization.id" v-if="!isRuleSetupVisible">
+                    <strong class="FileItem-relativePath FileItem-relativePath--optimization" v-for="optimization in computedFile.optimizations" :key="optimization.id" v-if="!isOpen">
                         <span>{{ optimization.relativePath }}</span>
                     </strong>
                 </div>
             </div>
-            <div class="FileItem-rulesAndOptimizations" v-for="rule in computedFile.rules" :key="rule.id" v-if="isRuleSetupVisible">
-                <div class="FileItem-rule" :class="{ 'has-error': rule.state === 'error' }">
+            <div class="FileItem-rulesAndOptimizations" :class="{ 'has-error': rule.state === 'error' }" v-for="rule in computedFile.rules" :key="rule.id" v-if="isOpen">
+                <div class="FileItem-rule">
                     <span class="FileItem-ruleName">
                         <div class="FileItem-ruleControls">
                             <button class="FileItem-reset" @click="emit('resetRule', rule.id)">R</button>
-                            <button class="FileItem-delete" v-if="!rule.presetRuleId" @click="emit('deleteRule', rule.id)">-</button>
+                            <button class="FileItem-delete" @click="emit('deleteRule', rule.id)" :disabled="rule.presetRuleId" >-</button>
                         </div>
                         <span>{{ rule.ruleName }}</span>
                     </span>
@@ -35,15 +43,6 @@
                     </strong>
                 </div>
             </div>
-            <div class="FileItem-rulesAndOptimizations" v-if="isRuleSetupVisible">
-                <div class="FileItem-rule FileItem-rule--ruleDefs">
-                    <button class="FileItem-ruleDefsOpener">+</button>
-                    <div class="FileItem-ruleDefs">
-                        <button v-for="ruleDef in computedFile.ruleDefs" :key="ruleDef.ruleName" @click="handleRuleDefClick(ruleDef)"> + {{ ruleDef.ruleName }} </button>
-                    </div>
-                </div>
-                <div class="FileItem-optimizations"> </div>
-            </div>
         </div>
     </article>
 </template>
@@ -54,7 +53,6 @@ import { AssetOptimizerOptimization, AssetOptimizerFile, AssetOptimizerRule, Ass
 import { computed, defineAsyncComponent, ref } from 'vue'
 
 export type ComputedRuleDef = {
-    displayName: string
     component: ReturnType<typeof defineAsyncComponent>
 } & AssetOptimizerRuleDef
 
@@ -104,22 +102,25 @@ const emit = defineEmits<{
     (event: 'resetRule', id: number): void
 }>()
 
-const isRuleSetupOpen = ref(false)
-const isRuleSetupVisible = computed(() => !props.computedFile.file.isDir && isRuleSetupOpen.value && (props.computedFile.rules.length || props.computedFile.ruleDefs.length))
+const isOpen = ref(false)
 </script>
 
 <style lang="stylus">
+line(direction = 'horizontal')
+    content ''
+    background #ddd
+    height 1px
+    margin-top .9em
+
 .FileItem
-    display flex
-    padding 0 20px
-    font-size 14px
+    display grid
+    grid-template-columns 400px 70px 1fr
 
     &-relativePath
         overflow hidden
         display flex
         align-items flex-start
         white-space nowrap
-        width 400px
         height 2em
         gap 10px
 
@@ -130,11 +131,8 @@ const isRuleSetupVisible = computed(() => !props.computedFile.file.isDir && isRu
 
         &--originalFile
             &:after
-                content ''
-                background #ddd
-                height 1px
+                line()
                 flex 1 1 30px
-                margin-top .9em
 
         &--optimization
             span
@@ -142,24 +140,49 @@ const isRuleSetupVisible = computed(() => !props.computedFile.file.isDir && isRu
                 justify-content flex-end
 
             &:before
-                content ''
-                background #ddd
-                height 1px
+                line()
                 flex 1 1 30px
-                margin-top .9em
 
-    &-ruleSetupPlaceholder
-        flex 1 1 0px
-        position relative
-
-    &-ruleSetup
-        flex 1 1 0px
-        position relative
-
-    &-rulesAndOptimizations
+    &-toggler
         display flex
         align-items flex-start
-        justify-content space-between
+
+        &:after
+            line()
+            flex 1 1 30px
+
+    &-togglerButton
+        padding 3px 10px
+        display flex
+        align-items center
+        justify-content center
+        background none
+        cursor pointer
+        border-radius var(--border-radius)
+        color #ddd
+
+        &:hover
+            background #f4f4f4
+            color #000
+
+    &-rulesAndOptimizations
+        position relative
+        display grid
+        grid-template-columns 1fr 400px
+
+        &:not(:last-child)
+            &:before
+                content ''
+                position absolute
+                top .9em
+                bottom -.9em
+                background #ddd
+                width 1px
+
+        &.has-error
+            .FileItem-rule
+                &:after
+                    content none
 
     &-rule
         display flex
@@ -168,152 +191,115 @@ const isRuleSetupVisible = computed(() => !props.computedFile.file.isDir && isRu
         white-space nowrap
         gap 10px
 
-        &:before,
-        &:after
-            content ''
-            background #ddd
-            height 1px
-            flex 1 1 30px
-            margin-top .9em
-
         &:before
+            line()
             flex 0 0 30px
 
-        &.has-error
-            background #fdd
-            padding 5px 0
+        &:after
+            line()
+            flex 1 1 30px
 
-        &--ruleDefs
-            margin-top 2px
-            &:hover
-                .FileItem-ruleDefs
-                    display flex
-
-    &-ruleSetupOpener
-        padding 5px 10px
-        display flex
-        align-items center
-        justify-content center
-        background none
-        cursor pointer
-        border-radius var(--border-radius)
-
-        &:hover
-            background #f4f4f4
+        &:not(:hover)
+            .FileItem-ruleDefs
+                display none
 
     &-optimizations
         position relative
-        width 400px
-        display flex
-        flex-flow column
         white-space nowrap
 
         &:before
             content ''
             position absolute
-            top .85em
-            bottom 1.1em
+            top .9em
+            bottom 1em
             background #ddd
             width 1px
 
     &-optimization
         display flex
+        align-items flex-start
 
         &:before
-            content ''
-            background #ddd
-            height 1px
+            line()
             flex 1 1 30px
-            margin-top .9em
 
     &-ruleDefs
         display flex
         gap 3px
         margin-left -38px
-        display none
 
         button
+            padding 3px 10px
             background var(--color-primary)
             color var(--color-primary-invert)
-            padding 3px 10px
-            cursor pointer
             border-radius var(--border-radius)
+            cursor pointer
 
     &-ruleDefsOpener
         background var(--color-primary)
         color var(--color-primary-invert)
-        padding 3px 10px
         border-radius var(--border-radius)
+        padding 3px 10px
 
     &-ruleName
-        position relative
+        padding-left 25px
+        margin-left -25px
         flex 0 0 auto
 
         &:not(:hover)
             .FileItem-ruleControls
                 display none
 
-        &.has-error
-            &:after
-                content '!'
-                display inline-block
-                text-align center
-                background red
-                color #fff
-                width 1.5em
-                height 1.5em
-                border-radius 50%
-                margin-left 5px
-
     &-ruleControls
-        position absolute
-        right 100%
+        display inline-flex
         gap 2px
-        display flex
+        margin-right 10px
 
         button
-            width 20px
-            height 20px
-            background var(--color-accent)
-            color var(--color-accent-invert)
+            background: var(--color-accent);
+            color: var(--color-accent-invert);
+            border-radius var(--border-radius)
+            cursor pointer
+            width 24px
+            height 24px
 
-    &-buttonDelete
-        background var(--color-accent)
-        border-radius var(--border-radius)
-        color #fff
-        cursor pointer
-
-    &.is-rulesetup-open
-        padding-bottom 30px
-
-        .FileItem-ruleSetup
-            &:before
-                content ''
-                position absolute
-                top .85em
-                bottom 1.1em
+            &:disabled
+                cursor not-allowed
                 background #ddd
-                width 1px
-
-        .FileItem-rule--opener
-            &:before,&:after
-                background none
-
-        .FileItem-rule--ruleDefs
-            &:after
-                background none
 
     &:hover
         .FileItem-relativePath
             span
                 overflow-x auto
 
-    &.has-rules:not(.has-error)
-        .FileItem-ruleSetupOpener
-            color #ddd
+    &.is-open
+        padding-bottom 10px
 
-    &:not(.has-rules):not(.is-rulesetup-open)
-        .FileItem-ruleSetupOpener
-            background var(--color-primary)
-            color var(--color-primary-invert)
+        .FileItem-rulesAndOptimizations--ruleDefs
+            padding-bottom 10px
+
+        .FileItem-toggler
+            &:before
+                content none
+
+    &:not(.has-optimizations),
+    &.is-open
+        .FileItem-rulesAndOptimizations--ruleDefs
+            .FileItem-rule
+                &:after
+                    content none
+
+    &.has-rules:not(.has-optimizations):not(.is-open)
+        .FileItem-toggler
+            &:after
+                content none
+
+    &.has-rules:not(.is-open)
+        .FileItem-rule
+            &:before
+                content none
+
+    &:not(.has-rules)
+        .FileItem-togglerButton
+            display none
 </style>
