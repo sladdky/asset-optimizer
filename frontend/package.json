@@ -1,6 +1,5 @@
 {
-  "name": "frontend",
-  "version": "0.1.0",
+	"name": "@sladdky/asset-optimizer-frontend",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
