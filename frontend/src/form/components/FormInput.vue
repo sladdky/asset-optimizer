@@ -30,7 +30,7 @@ const model = computed({
 <style lang="stylus">
 .FormInput
 	border 1px solid #999
-	background #999
+	background #ddd
 	box-shadow none
 	padding 0
 	border-radius 0

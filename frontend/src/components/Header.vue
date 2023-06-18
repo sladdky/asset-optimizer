@@ -15,7 +15,7 @@
     font-weight 700
     text-align center
     background var(--color-primary)
-    color var(--color-primary-400)
+    color var(--color-primary-300)
     font-size .8rem
     position relative
     z-index 2

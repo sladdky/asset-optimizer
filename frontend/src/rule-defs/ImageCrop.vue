@@ -9,16 +9,18 @@
                     <option value="extract">custom</option>
                 </select>
                 <button class="ImageCrop-buttonEditor" v-if="data.strategy === 'extract'" @click="handleEditorClick"> editor </button>
-                <button type="button" @click="handleCropClearClick">&times;</button>
+                <button class="ImageCrop-buttonDelete" type="button" @click="handleCropClearClick">&times;</button>
             </div>
         </div>
         <div v-else>
             <button class="ImageCrop-buttonDefineSize" type="button" @click="handleDefineCropClick">custom dimensions</button>
         </div>
-        <div v-for="(variant, index) in data.variants" :key="index">
-            <div class="ImageCrop-input">
-                <input type="text" placeholder="(multiplier)x" v-model="data.variants[index]">
-                <button type="button" @click="handleVariantRemoveClick(index)">-</button>
+        <div class="ImageCrop-variants">
+            <div v-for="(variant, index) in data.variants" :key="index">
+                <div class="ImageCrop-input">
+                    <input type="text" placeholder="(multiplier)x" v-model="data.variants[index]">
+                    <button class="ImageCrop-buttonDelete" type="button" @click="handleVariantRemoveClick(index)">-</button>
+                </div>
             </div>
         </div>
         <button class="ImageCrop-buttonAdd" type="button" @click="handleVariantAddClick">+</button>
@@ -125,19 +127,27 @@ const handleEditorClick = () => {
 
         input
             flex 1 1 0px
-            width 50px
-            min-width 50px
+            width 55px
+            min-width 55px
             background none
 
         &--size
+            min-width 230px
+
             input
                 width 80px
 
         button
             width 20px
-            border-radius var(--border-radius)
             background var(--color-primary-100)
             color var(--color-primary-invert-100)
+
+            &+&
+                border-left 1px solid var(--color-primary-200)
+
+    &-buttonDelete
+        border-top-right-radius var(--border-radius)
+        border-bottom-right-radius var(--border-radius)
 
     &-buttonAdd
         background var(--color-primary)
@@ -145,11 +155,16 @@ const handleEditorClick = () => {
         border-radius var(--border-radius)
 
     &-buttonDefineSize
+        min-width 230px
         background var(--color-primary-100)
         color var(--color-primary-invert-100)
-        border 1px solid var(--color-primary)
         border-radius var(--border-radius)
 
     &-buttonEditor
         width auto !important
+
+    &-variants
+        display flex
+        flex-flow column
+        gap 3px
 </style>

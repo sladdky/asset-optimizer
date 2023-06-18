@@ -44,7 +44,7 @@ import Bubble from './components/Bubble.vue'
     --box-shadow 0 0 10px 0 rgba(#000, .3)
     --border-radius 4px
     --color-primary #17232b
-    --color-primary-100 #e7f6ff
+    --color-primary-100 #ddd
     --color-primary-200 #d8e1eb
     --color-primary-300 #747b80
     --color-primary-400 #454f55

@@ -4,7 +4,7 @@
             <FormInput type="text" :value="fields['pattern']" @frmchange="(value) => handleInputChange('pattern', value)" placeholder="*. | my-folder/*.\.jpg | ..." />
             <FormInputErrors :errors="errors['pattern']" />
         </FormItem>
-        <button class="PresetForm-button" type="submit">+create</button>
+        <button class="PresetForm-button" type="submit">+create preset</button>
     </form>
 </template>
 
@@ -55,7 +55,7 @@ const { socket } = useSocket()
 .PresetForm
     display grid
     align-items flex-start
-    grid-template-columns 425px 90px
+    grid-template-columns 425px 170px
     gap 10px
     font-size 14px
 

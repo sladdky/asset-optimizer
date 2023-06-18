@@ -30,8 +30,8 @@ const handlePresetClick = () => {
     color var(--color-primary-invert)
 
     &-presetOpener
-        background var(--color-primary-400)
-        color #dddd
+        background var(--color-primary-100)
+        color var(--color-primary-invert-100)
         cursor pointer
         padding 2px 10px
         border-radius var(--border-radius)
@@ -39,7 +39,7 @@ const handlePresetClick = () => {
     input
         border-radius var(--border-radius)
         padding 2px 10px
-        background var(--color-primary-400)
+        background var(--color-primary-100)
         color var(--color-primary-invert-600)
 
         &::placeholder
