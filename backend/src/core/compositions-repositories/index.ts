@@ -1,6 +1,7 @@
 export {watchFileCreateComposition} from './watchFileCreateComposition'
 export {watchFileDeleteComposition} from './watchFileDeleteComposition'
 export {watchFileUpdateComposition} from './watchFileUpdateComposition'
+export {watchOptimizationDeleteComposition} from './watchOptimizationDeleteComposition'
 export {watchPresetDeleteComposition} from './watchPresetDeleteComposition'
 export {watchPresetRuleCreateComposition} from './watchPresetRuleCreateComposition'
 export {watchPresetRuleDeleteComposition} from './watchPresetRuleDeleteComposition'

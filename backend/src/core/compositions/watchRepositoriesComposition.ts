@@ -1,8 +1,9 @@
 import { FileRepository, OptimizationRepository, PresetRepository, PresetRuleRepository, RuleRepository } from '../repositories'
-import { watchFileCreateComposition, watchFileDeleteComposition, watchFileUpdateComposition, watchPresetDeleteComposition, watchPresetRuleCreateComposition, watchPresetRuleDeleteComposition, watchPresetRuleUpdateComposition, watchRuleBeforeCreateComposition, watchRuleBeforeUpdateComposition, watchRuleDeleteComposition } from '../compositions-repositories'
+import { watchFileCreateComposition, watchFileDeleteComposition, watchFileUpdateComposition, watchOptimizationDeleteComposition, watchPresetDeleteComposition, watchPresetRuleCreateComposition, watchPresetRuleDeleteComposition, watchPresetRuleUpdateComposition, watchRuleBeforeCreateComposition, watchRuleBeforeUpdateComposition, watchRuleDeleteComposition } from '../compositions-repositories'
 import { AssetOptimizerRuleDef } from '../types'
 
 type Props = {
+    outputCwd: string;
     ruleDefs: AssetOptimizerRuleDef[];
 	components: {
 		fileRepository: FileRepository;
@@ -14,7 +15,7 @@ type Props = {
 };
 
 //watch for changes in filesystem and update store accordingly
-export function watchRepositoriesComposition({ ruleDefs, components }: Props) {
+export function watchRepositoriesComposition({ outputCwd, ruleDefs, components }: Props) {
 	return () => {
 		const watchFileCreate = watchFileCreateComposition({ruleDefs, components})
         watchFileCreate()
@@ -22,6 +23,8 @@ export function watchRepositoriesComposition({ ruleDefs, components }: Props) {
         watchFileDelete()
 		const watchFileUpdate = watchFileUpdateComposition({ components})
         watchFileUpdate()
+		const watchOptimizationDelete = watchOptimizationDeleteComposition({ outputCwd, components})
+        watchOptimizationDelete()
 		const watchPresetDelete = watchPresetDeleteComposition({ components})
         watchPresetDelete()
 		const watchPresetRuleCreate = watchPresetRuleCreateComposition({ruleDefs, components})

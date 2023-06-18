@@ -9,7 +9,7 @@ type Props = {
 	};
 };
 
-export function scanFsFilesComposition({ cwd, components }: Props) {
+export function syncFsFilesComposition({ cwd, components }: Props) {
 	return () => {
 		const fsAoFiles = getAoFiles('', {
 			cwd,
