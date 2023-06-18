@@ -44,7 +44,7 @@ export function runOptimizationForRuleComposition({ inputCwd, outputCwd, tempCwd
 			const hasDuplicates = new Set(paths).size !== paths.length;
 
 			if (hasDuplicates) {
-				throw new Error(`File name collision`);
+				throw new Error(`File name collision. Optimization created 2 or more files with same name. Verify implementation.`);
 			}
 
 			const collidingOptimizations = components['optimizationRepository'].find({
@@ -56,7 +56,7 @@ export function runOptimizationForRuleComposition({ inputCwd, outputCwd, tempCwd
 			});
 
 			if (collidingOptimizations.length) {
-				throw new Error(`File name collision`);
+				throw new Error(`File name collision. Paths: '${collidingOptimizations.map(opt => opt.relativePath).join(', ')}' already exist.`);
 			}
 
 			for (const metaOptimization of meta.optimizations) {

@@ -16,6 +16,7 @@ type Props = {
 //
 // CASE 2
 // 1. if ruleData changes => delete all optimizations and run new optimizations
+// 2. run all errored optimizations for the file. Some might be resolved by updating this one
 //
 export function watchRuleBeforeUpdateComposition({ ruleDefs, components }: Props) {
 	return () => {
@@ -38,10 +39,40 @@ export function watchRuleBeforeUpdateComposition({ ruleDefs, components }: Props
 				});
 
 				rule.state = '';
+
+				const otherErroredRules = components['ruleRepository'].find({
+					query: {
+						$and: [
+							{
+								id: {
+									$ne: rule.id
+								}
+							},
+							{
+								fileId:{
+									$eq: rule.fileId
+								},
+							},
+							{
+								state: {
+									$eq: 'error'
+								}
+							}
+						]
+					}
+				})
+
+				otherErroredRules.forEach(erroredRule => {
+					erroredRule.state = ''
+				})
+
+				components['ruleRepository'].updateMany(otherErroredRules)
 			}
 
 			return rule;
 		});
+
+
 
 	};
 }
