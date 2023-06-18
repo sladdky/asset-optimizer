@@ -1,13 +1,12 @@
-import path from 'path';
-import fs from 'fs';
 import { AssetOptimizerCreateOptMetaProps, AssetOptimizerRule } from '../types';
 import { nanoid } from 'nanoid';
+import path from 'path';
+import fs from 'fs';
 
 type Props = {
 	tempCwd: string;
 };
 
-//optimizing file
 export function createOptMetaComposition({ tempCwd }: Props) {
 	const tempDir = path.join(tempCwd, '/.optimized/');
 

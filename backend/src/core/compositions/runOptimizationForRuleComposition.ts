@@ -1,8 +1,8 @@
 import { FileRepository, OptimizationRepository, RuleRepository } from '../repositories';
 import { AssetOptimizerRule, AssetOptimizerRuleDef } from '../types';
+import { createOptMetaComposition } from './createOptMetaComposition';
 import fs from 'fs/promises';
 import path from 'path';
-import { createOptMetaComposition } from './createOptMetaComposition';
 
 type Props = {
 	inputCwd: string;

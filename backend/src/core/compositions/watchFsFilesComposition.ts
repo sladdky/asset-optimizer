@@ -1,6 +1,6 @@
+import { getAoFile } from '../common';
+import { FileRepository } from '../repositories';
 import { debounce } from 'lodash';
-import { getAoFile } from '../common/getAoFile';
-import { FileRepository } from '../repositories/FileRepository';
 import chokidar from 'chokidar';
 
 type Props = {

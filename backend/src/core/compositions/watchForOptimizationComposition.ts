@@ -1,4 +1,4 @@
-import { createQueue } from '../common/createQueue';
+import { createQueue } from '../common';
 import { FileRepository, OptimizationRepository, RuleRepository } from '../repositories';
 import { AssetOptimizerRule, AssetOptimizerRuleDef } from '../types';
 import { runOptimizationForRuleComposition } from './runOptimizationForRuleComposition';

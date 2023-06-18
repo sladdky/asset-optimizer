@@ -8,18 +8,16 @@ type Props = {
 	};
 };
 
-export function supplyDefaultDataToNewRulesComposition({ ruleDefs, components }: Props) {
+// rule beforecreated
+// ----
+// 1. make sure ruleData for optimization are valid before saving to db
+//
+export function watchRuleBeforeCreateComposition({ ruleDefs, components }: Props) {
 	return () => {
 		components['ruleRepository'].on('before-create', (rule: AssetOptimizerRule) => {
 			const ruleDef = ruleDefs.find((ruleDef) => ruleDef.ruleName === rule.ruleName);
 			const data = ruleDef?.processData(rule.data);
 			rule.data = data;
-			return rule;
-		});
-
-		components['ruleRepository'].on('before-update', (rule: AssetOptimizerRule) => {
-			const ruleDef = ruleDefs.find((ruleDef) => ruleDef.ruleName === rule.ruleName);
-			rule.data = ruleDef?.processData(rule.data);
 			return rule;
 		});
 	};

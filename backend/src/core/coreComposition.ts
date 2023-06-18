@@ -1,16 +1,12 @@
 import { AssetOptimizerCoreConfig, AssetOptimizerRuleDef } from './types';
-import { FileRepository, OptimizationRepository, RuleRepository, PresetRepository } from './repositories';
+import { FileRepository, OptimizationRepository, RuleRepository, PresetRepository, PresetRuleRepository } from './repositories';
 import {
 	watchFsFilesComposition,
 	scanFsFilesComposition,
-	supplyDefaultDataToNewRulesComposition,
 	watchForOptimizationComposition,
-	watchForCleanupComposition,
-	watchPresetsComposition,
-	watchRulesComposition,
+	watchRepositoriesComposition,
 } from './compositions';
 import { copyRuleDef, imageAutoRuleDef, imageCropRuleDef, svgAutoRuleDef, videoAutoRuleDef } from './rule-defs';
-import { PresetRuleRepository } from './repositories/PresetRuleRepository';
 
 type Props = {
 	config: Pick<AssetOptimizerCoreConfig, 'inputCwd' | 'outputCwd'> & Partial<AssetOptimizerCoreConfig>;
@@ -50,41 +46,29 @@ export function coreComposition({ config, components }: Props) {
 
 	return {
 		start: async () => {
-			console.log('1/7 CORE:Scanning filesystem...');
+			console.log('1/4 CORE:Synchronizing filesystem...');
 			const scanFsFiles = scanFsFilesComposition({
 				cwd: config.inputCwd,
 				components,
 			});
 			await scanFsFiles();
 
-			console.log('2/7 CORE:Watching rule changes ...');
-			const watchRules = watchRulesComposition({
-				components,
-			});
-			watchRules();
-
-			console.log('3/7 CORE:Watching rule data for validation...');
-			const supplyDefaultDataToNewRules = supplyDefaultDataToNewRulesComposition({
+			console.log('2/4 CORE:Watching repositories ...');
+			const watchRepositories = watchRepositoriesComposition({
 				ruleDefs,
-				components,
+				components
 			});
-			supplyDefaultDataToNewRules();
+			watchRepositories();
 
-			console.log('4/7 CORE:Watching presets...');
-			const watchPresets = watchPresetsComposition({
-				ruleDefs,
-				components,
-			});
-			await watchPresets();
 
-			console.log('5/7 CORE:Watching filesystem changes...');
+			console.log('3/4 CORE:Watching filesystem changes...');
 			const watchFsFiles = watchFsFilesComposition({
 				cwd: config.inputCwd,
 				components,
 			});
 			await watchFsFiles();
 
-			console.log('6/7 CORE:Watching optimization requests...');
+			console.log('4/4 CORE:Watching for pending optimizations...');
 			const watchForOptimization = watchForOptimizationComposition({
 				inputCwd: config.inputCwd,
 				outputCwd: config.outputCwd,
@@ -92,12 +76,6 @@ export function coreComposition({ config, components }: Props) {
 				components,
 			});
 			await watchForOptimization();
-
-			console.log('7/7 CORE:Watching for deleted rules,files and presets...');
-			const watchForCleanup = watchForCleanupComposition({
-				components,
-			});
-			watchForCleanup();
 		},
 		addRuleDef,
 		getRuleDefs() {
