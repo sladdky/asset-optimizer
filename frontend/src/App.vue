@@ -4,6 +4,7 @@
         <Filter />
         <Panel />
         <FileList />
+        <Bubble />
     </div>
 </template>
 
@@ -12,8 +13,7 @@ import Panel from './components/Panel.vue'
 import Filter from './components/Filter.vue'
 import Header from './components/Header.vue'
 import FileList from './components/FileList.vue'
-
-
+import Bubble from './components/Bubble.vue'
 </script>
 
 <style lang="stylus">
@@ -41,6 +41,7 @@ import FileList from './components/FileList.vue'
     font-weight 400
 
 :root
+    --box-shadow 0 0 10px 0 rgba(#000, .3)
     --border-radius 4px
     --color-primary #17232b
     --color-primary-100 #e7f6ff

@@ -19,6 +19,8 @@ interface Success<T> {
 export type Response<T> = Error | Success<T>;
 
 export type AssetOptimizerApiConfig = {
+	inputCwd: string
+	outputCwd: string;
 	port: number;
 	socketOptions?: Partial<ServerOptions>;
 };
@@ -29,6 +31,7 @@ export type AssetOptimizerApiClientEvents = {
 	'file:update': (aoFile: AssetOptimizerFile) => void;
 	'file:create': (aoFile: Omit<AssetOptimizerFile, 'id'>) => Promise<void>;
 	'file:upload': () => void; //@todo
+	'file:previewimage': (id: number, callback: (res: Response<string>) => void) => void;
 
 	'rule:list': (callback: (res: Response<AssetOptimizerRule[]>) => void) => void;
 	'rule:delete': (id: number) => void;
@@ -46,6 +49,7 @@ export type AssetOptimizerApiClientEvents = {
 	'presetrule:update': (presetRule: AssetOptimizerPresetRule) => void;
 	'presetrule:create': (presetRule: Omit<AssetOptimizerPresetRule, 'id'>) => void;
 
+	'optimization:previewimage': (id: number, callback: (res: Response<string>) => void) => void;
 	'optimization:list': (callback: (res: Response<AssetOptimizerOptimization[]>) => void) => void;
 
 	'ruledef:list': (callback: (res: Response<AssetOptimizerRuleDef[]>) => void) => void;

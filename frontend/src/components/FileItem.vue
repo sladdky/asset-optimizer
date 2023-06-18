@@ -1,8 +1,6 @@
 <template>
     <article class="FileItem" :class="{ 'is-open': isOpen, 'has-rules': computedFile.rules.length, 'has-error': computedFile.hasErrors, 'has-optimizations': computedFile.optimizations.length }" v-if="!computedFile.file.isDir">
-        <strong class="FileItem-relativePath FileItem-relativePath--originalFile">
-            <span>{{ computedFile.file.relativePath }}</span>
-        </strong>
+        <FileRelativePath class="FileItem-relativePath FileItem-relativePath--originalFile" :file="computedFile.file" />
         <div class="FileItem-toggler">
             <button class="FileItem-togglerButton" @click="isOpen = !isOpen"> {{ computedFile.rules.length }}
                 <Error align="block" message="" v-if="computedFile.hasErrors && !isOpen" />
@@ -19,9 +17,7 @@
                     </template>
                 </div>
                 <div class="FileItem-optimizations">
-                    <strong class="FileItem-relativePath FileItem-relativePath--optimization" v-for="optimization in computedFile.optimizations" :key="optimization.id" v-if="!isOpen">
-                        <span>{{ optimization.relativePath }}</span>
-                    </strong>
+                    <OptimizationRelativePath class="FileItem-relativePath FileItem-relativePath--optimization" v-for="optimization in computedFile.optimizations" :key="optimization.id" v-if="!isOpen" :optimization="optimization" />
                 </div>
             </div>
             <div class="FileItem-rulesAndOptimizations" :class="{ 'has-error': rule.state === 'error' }" v-for="rule in computedFile.rules" :key="rule.id" v-if="isOpen">
@@ -29,7 +25,7 @@
                     <span class="FileItem-ruleName">
                         <div class="FileItem-ruleControls">
                             <button class="FileItem-reset" @click="emit('resetRule', rule.id)">R</button>
-                            <button class="FileItem-delete" @click="emit('deleteRule', rule.id)" :disabled="rule.presetRuleId" >-</button>
+                            <button class="FileItem-delete" @click="emit('deleteRule', rule.id)" :disabled="rule.presetRuleId">-</button>
                         </div>
                         <span>{{ rule.ruleName }}</span>
                     </span>
@@ -38,9 +34,7 @@
                     <Error align="block" v-if="rule.state === 'error' && rule.error" :message="rule.error" />
                 </div>
                 <div class="FileItem-optimizations">
-                    <strong class="FileItem-relativePath FileItem-relativePath--optimization" v-for="optimization in computedFile.optimizations.filter(optimization => optimization.ruleId === rule.id)" :key="optimization.id">
-                        <span>{{ optimization.relativePath }}</span>
-                    </strong>
+                    <OptimizationRelativePath class="FileItem-relativePath FileItem-relativePath--optimization" v-for="optimization in computedFile.optimizations.filter(optimization => optimization.ruleId === rule.id)" :key="optimization.id"  :optimization="optimization" />
                 </div>
             </div>
         </div>
@@ -49,6 +43,8 @@
 
 <script lang="ts" setup>
 import Error from './Error.vue'
+import FileRelativePath from './FileRelativePath.vue'
+import OptimizationRelativePath from './OptimizationRelativePath.vue'
 import { AssetOptimizerOptimization, AssetOptimizerFile, AssetOptimizerRule, AssetOptimizerRuleDef } from '@/types'
 import { computed, defineAsyncComponent, ref } from 'vue'
 
@@ -100,7 +96,10 @@ const emit = defineEmits<{
     (event: 'deleteRule', id: number): void
     (event: 'updateRule', rule: AssetOptimizerRule): void
     (event: 'resetRule', id: number): void
+    (event: 'optimizationEnter', id: number): void
+    (event: 'optimizationLeave', id: number): void
 }>()
+
 
 const isOpen = ref(false)
 </script>
@@ -117,28 +116,12 @@ line(direction = 'horizontal')
     grid-template-columns 400px 70px 1fr
 
     &-relativePath
-        overflow hidden
-        display flex
-        align-items flex-start
-        white-space nowrap
-        height 2em
-        gap 10px
-
-        span
-            overflow hidden
-            display block
-            padding-bottom 20px
-
         &--originalFile
             &:after
                 line()
                 flex 1 1 30px
 
         &--optimization
-            span
-                display flex
-                justify-content flex-end
-
             &:before
                 line()
                 flex 1 1 30px

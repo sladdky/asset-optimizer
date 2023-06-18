@@ -48,7 +48,12 @@ const handleFileItemDeleteRule = (id: number) => {
 const handleFileItemUpdateRule = (rule: AssetOptimizerRule) => {
     socket.emit('rule:update', rule)
 }
+
 const handleFileItemResetRule = (id: number) => {
+    socket.emit('rule:reset', id)
+}
+
+const handleFileItemOptimizationClick = (id: number) => {
     socket.emit('rule:reset', id)
 }
 

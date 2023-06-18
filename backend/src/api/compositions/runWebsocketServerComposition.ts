@@ -14,6 +14,8 @@ import {
 import { createPresetHandlers } from '../handlers/createPresetHandlers';
 
 type Props = {
+	inputCwd: string;
+	outputCwd: string;
 	httpServer: HttpServer;
 	socketOptions: Partial<ServerOptions>;
 	components: {
@@ -26,14 +28,14 @@ type Props = {
 	};
 };
 
-export function runWebsocketServerComposition({ components, httpServer, socketOptions = {} }: Props) {
+export function runWebsocketServerComposition({ inputCwd, outputCwd, components, httpServer, socketOptions = {} }: Props) {
 	return () => {
 		const io = new Server<AssetOptimizerApiClientEvents, AssetOptimizerApiServerEvents>(httpServer, socketOptions);
 
 		io.on('connection', (socket) => {
-			const { uploadFile, updateFile, deleteFile, listFile, createFile } = createFileHandlers({ components });
+			const { uploadFile, updateFile, deleteFile, listFile, createFile, readFilePreviewImage } = createFileHandlers({ inputCwd, components });
 			const { listRule, deleteRule, updateRule, createRule, resetRule } = createRuleHandlers({ components });
-			const { listOptimization } = createOptimizationHandlers({ components });
+			const { listOptimization, readOptimizationPreviewImage } = createOptimizationHandlers({ outputCwd, components });
 			const { listRuleDef } = createRuleDefHandlers({ components });
 			const { listPreset, deletePreset, updatePreset, createPreset } = createPresetHandlers({ components });
 			const { listPresetRule, deletePresetRule, updatePresetRule, createPresetRule } = createPresetRuleHandlers({ components });
@@ -43,6 +45,7 @@ export function runWebsocketServerComposition({ components, httpServer, socketOp
 			socket.on('file:update', updateFile);
 			socket.on('file:upload', uploadFile);
 			socket.on('file:create', createFile);
+			socket.on('file:previewimage', readFilePreviewImage);
 
 			socket.on('rule:list', listRule);
 			socket.on('rule:delete', deleteRule);
@@ -60,6 +63,7 @@ export function runWebsocketServerComposition({ components, httpServer, socketOp
 			socket.on('presetrule:update', updatePresetRule);
 			socket.on('presetrule:create', createPresetRule);
 
+			socket.on('optimization:previewimage', readOptimizationPreviewImage);
 			socket.on('optimization:list', listOptimization);
 
 			socket.on('ruledef:list', listRuleDef);

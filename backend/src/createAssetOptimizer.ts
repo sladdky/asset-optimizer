@@ -45,6 +45,8 @@ export function createAssetOptimizer(config: AssetOptimizerConfig) {
 
 	const api = apiComposition({
 		config: {
+			inputCwd: coreConfig.inputCwd,
+			outputCwd: coreConfig.outputCwd,
 			port: 3011,
 			...apiConfig,
 		},

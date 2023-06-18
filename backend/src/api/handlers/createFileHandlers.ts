@@ -1,14 +1,17 @@
 import { FileRepository } from '../../core/repositories';
 import { AssetOptimizerFile, Response } from '../../types';
 import fs from 'fs/promises';
+import path from 'path'
+import { getPreviewImage } from '../common/getPreviewImage'
 
 type Props = {
+	inputCwd: string
 	components: {
 		fileRepository: FileRepository;
 	};
 };
 
-export function createFileHandlers({ components }: Props) {
+export function createFileHandlers({ inputCwd, components }: Props) {
 	return {
 		deleteFile() {
 			//todo
@@ -24,8 +27,13 @@ export function createFileHandlers({ components }: Props) {
 		uploadFile() {
 			//todo
 		},
-		readFile() {
-			//todo
+		readFilePreviewImage(id: number, callback: (res: Response<string>) => void) {
+			const aoFile = components['fileRepository'].findById(id)
+			const fullpath = path.join(inputCwd, aoFile?.relativePath ?? '')
+
+			callback({
+				data: getPreviewImage(fullpath),
+			});
 		},
 		async createFile(aoFile: Omit<AssetOptimizerFile, 'id'>) {
 			await fs.mkdir(aoFile.relativePath, {

@@ -9,7 +9,7 @@
 import { computed, ref } from 'vue'
 import PresetForm from './PresetForm.vue'
 import PresetList from './PresetList.vue'
-import { AssetOptimizerRuleDef } from '../../../backend/src/types'
+import { AssetOptimizerRuleDef } from '@/types'
 import { useSocket } from '@/hooks'
 import { useFilter } from '@/hooks/useFilter'
 

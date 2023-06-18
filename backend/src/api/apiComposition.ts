@@ -29,6 +29,8 @@ export function apiComposition({ config, components }: Props) {
 					},
 					...config.socketOptions,
 				},
+				inputCwd: config.inputCwd,
+				outputCwd: config.outputCwd,
 				components,
 			});
 			runWebsocketServer();
