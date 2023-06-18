@@ -65,11 +65,13 @@ export function runOptimizationForRuleComposition({ inputCwd, outputCwd, tempCwd
 					recursive: true,
 				});
 				await fs.rename(metaOptimization.tempPath, outputPath);
+				const lstat = await fs.lstat(outputPath);
 
 				components['optimizationRepository'].create({
 					relativePath: metaOptimization.relativePath,
 					ruleId: rule.id,
 					fileId: rule.fileId,
+					modified: lstat.mtime.getTime()
 				});
 			}
 

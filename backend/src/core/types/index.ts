@@ -95,6 +95,7 @@ export type AssetOptimizerOptimization = {
 	fileId: number; //fluent id, after app restart it can change
 	relativePath: string;
 	ruleId: number;
+	modified: number
 } & IEntity;
 
 export type AssetOptimizerRule = {

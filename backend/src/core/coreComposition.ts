@@ -2,7 +2,7 @@ import { AssetOptimizerCoreConfig, AssetOptimizerRuleDef } from './types';
 import { FileRepository, OptimizationRepository, RuleRepository, PresetRepository, PresetRuleRepository } from './repositories';
 import {
 	watchFsFilesComposition,
-	syncFsFilesComposition,
+	syncComposition,
 	watchForOptimizationComposition,
 	watchRepositoriesComposition,
 } from './compositions';
@@ -47,11 +47,13 @@ export function coreComposition({ config, components }: Props) {
 	return {
 		start: async () => {
 			console.log('1/4 CORE:Synchronizing filesystem...');
-			const syncFsFiles = syncFsFilesComposition({
-				cwd: config.inputCwd,
+			const sync = syncComposition({
+				inputCwd: config.inputCwd,
+				outputCwd: config.outputCwd,
+				ruleDefs,
 				components,
 			});
-			await syncFsFiles();
+			await sync();
 
 			console.log('2/4 CORE:Watching repositories ...');
 			const watchRepositories = watchRepositoriesComposition({

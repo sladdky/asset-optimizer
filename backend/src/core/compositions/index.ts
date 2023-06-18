@@ -1,4 +1,4 @@
-export { syncFsFilesComposition } from './syncFsFilesComposition';
+export { syncComposition } from './syncComposition';
 export { watchFsFilesComposition } from './watchFsFilesComposition';
 export { watchForOptimizationComposition } from './watchForOptimizationComposition';
 export { runCliComposition } from './runCliComposition';
