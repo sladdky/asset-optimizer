@@ -3,7 +3,7 @@
         <Header />
         <Filter />
         <Panel />
-        <FileList />
+        <ComputedFileList />
         <Bubble />
     </div>
 </template>
@@ -12,7 +12,7 @@
 import Panel from './components/Panel.vue'
 import Filter from './components/Filter.vue'
 import Header from './components/Header.vue'
-import FileList from './components/FileList.vue'
+import ComputedFileList from './components/ComputedFileList.vue'
 import Bubble from './components/Bubble.vue'
 </script>
 

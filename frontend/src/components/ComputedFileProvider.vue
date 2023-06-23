@@ -8,7 +8,7 @@
 import { AssetOptimizerFile, AssetOptimizerOptimization, AssetOptimizerRule, AssetOptimizerRuleDef } from '@/types'
 import { computed, defineAsyncComponent, ref } from 'vue'
 import { useIntersectionObserver, MaybeElement } from '@vueuse/core'
-import { ComputedFile, ComputedRuleDef } from './FileItem.vue'
+import { ComputedFile, ComputedRuleDef } from './ComputedFile.vue'
 import { memoizeWith } from 'ramda'
 
 const props = defineProps<{

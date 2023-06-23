@@ -1,31 +1,35 @@
 <template>
-    <article class="FileItem" :class="{ 'is-open': isOpen, 'has-rules': computedFile.rules.length, 'has-error': computedFile.hasErrors, 'has-optimizations': computedFile.optimizations.length }" v-if="!computedFile.file.isDir">
-        <FileRelativePath class="FileItem-relativePath FileItem-relativePath--originalFile" :file="computedFile.file" />
-        <div class="FileItem-toggler">
-            <button class="FileItem-togglerButton" @click="isOpen = !isOpen"> {{ computedFile.rules.length }}
+    <article class="ComputedFile" :class="{ 'is-open': isOpen, 'has-rules': computedFile.rules.length, 'has-error': computedFile.hasErrors, 'has-optimizations': computedFile.optimizations.length }" v-if="!computedFile.file.isDir">
+        <div class="ComputedFile-relativePath ComputedFile-relativePath--originalFile">
+            <FileRelativePath :file="computedFile.file" />
+        </div>
+        <div class="ComputedFile-toggler">
+            <button class="ComputedFile-togglerButton" @click="isOpen = !isOpen"> {{ computedFile.rules.length }}
                 <Error align="block" message="" v-if="computedFile.hasErrors && !isOpen" />
             </button>
         </div>
         <div>
-            <div class="FileItem-rulesAndOptimizations FileItem-rulesAndOptimizations--ruleDefs">
-                <div class="FileItem-rule">
+            <div class="ComputedFile-rulesAndOptimizations ComputedFile-rulesAndOptimizations--ruleDefs">
+                <div class="ComputedFile-rule">
                     <template v-if="isOpen || (!computedFile.rules.length && !isOpen)">
-                        <button class="FileItem-ruleDefsOpener">+</button>
-                        <div class="FileItem-ruleDefs">
+                        <button class="ComputedFile-ruleDefsOpener">+</button>
+                        <div class="ComputedFile-ruleDefs">
                             <button v-for="ruleDef in computedFile.ruleDefs" :key="ruleDef.ruleName" @click="handleRuleDefClick(ruleDef)"> + {{ ruleDef.ruleName }} </button>
                         </div>
                     </template>
                 </div>
-                <div class="FileItem-optimizations">
-                    <OptimizationRelativePath class="FileItem-relativePath FileItem-relativePath--optimization" v-for="optimization in computedFile.optimizations" :key="optimization.id" v-if="!isOpen" :optimization="optimization" />
+                <div class="ComputedFile-optimizations">
+                    <div class="ComputedFile-relativePath ComputedFile-relativePath--optimization" v-for="optimization in computedFile.optimizations" v-if="!isOpen" :key="optimization.id">
+                        <OptimizationRelativePath :optimization="optimization" />
+                    </div>
                 </div>
             </div>
-            <div class="FileItem-rulesAndOptimizations" :class="{ 'has-error': rule.state === 'error' }" v-for="rule in computedFile.rules" :key="rule.id" v-if="isOpen">
-                <div class="FileItem-rule">
-                    <span class="FileItem-ruleName">
-                        <div class="FileItem-ruleControls">
-                            <button class="FileItem-reset" @click="emit('resetRule', rule.id)">R</button>
-                            <button class="FileItem-delete" @click="emit('deleteRule', rule.id)" :disabled="rule.presetRuleId">-</button>
+            <div class="ComputedFile-rulesAndOptimizations" :class="{ 'has-error': rule.state === 'error' }" v-for="rule in computedFile.rules" :key="rule.id" v-if="isOpen">
+                <div class="ComputedFile-rule">
+                    <span class="ComputedFile-ruleName">
+                        <div class="ComputedFile-ruleControls">
+                            <button class="ComputedFile-reset" @click="emit('resetRule', rule.id)">R</button>
+                            <button class="ComputedFile-delete" @click="emit('deleteRule', rule.id)" :disabled="!!rule.presetRuleId">-</button>
                         </div>
                         <span>{{ rule.ruleName }}</span>
                     </span>
@@ -33,8 +37,10 @@
                     <component :is="RULE_DEFS_BY_NAME[rule.ruleName]?.component" :data="rule.data" @change="(data: any) => handleRuleChange({ ...rule, data })" />
                     <Error align="block" v-if="rule.state === 'error' && rule.error" :message="rule.error" />
                 </div>
-                <div class="FileItem-optimizations">
-                    <OptimizationRelativePath class="FileItem-relativePath FileItem-relativePath--optimization" v-for="optimization in computedFile.optimizations.filter(optimization => optimization.ruleId === rule.id)" :key="optimization.id"  :optimization="optimization" />
+                <div class="ComputedFile-optimizations">
+                    <div class="ComputedFile-relativePath ComputedFile-relativePath--optimization" v-for="optimization in computedFile.optimizations.filter(optimization => optimization.ruleId === rule.id)" :key="optimization.id">
+                        <OptimizationRelativePath :optimization="optimization" />
+                    </div>
                 </div>
             </div>
         </div>
@@ -111,17 +117,23 @@ line(direction = 'horizontal')
     height 1px
     margin-top .9em
 
-.FileItem
+.ComputedFile
     display grid
     grid-template-columns 400px 70px 1fr
 
     &-relativePath
         &--originalFile
+            display flex
+            align-items flex-start
+
             &:after
                 line()
                 flex 1 1 30px
 
         &--optimization
+            display flex
+            align-items flex-start
+
             &:before
                 line()
                 flex 1 1 30px
@@ -163,7 +175,7 @@ line(direction = 'horizontal')
                 width 1px
 
         &.has-error
-            .FileItem-rule
+            .ComputedFile-rule
                 &:after
                     content none
 
@@ -183,7 +195,7 @@ line(direction = 'horizontal')
             flex 1 1 30px
 
         &:not(:hover)
-            .FileItem-ruleDefs
+            .ComputedFile-ruleDefs
                 display none
 
     &-optimizations
@@ -230,7 +242,7 @@ line(direction = 'horizontal')
         flex 0 0 auto
 
         &:not(:hover)
-            .FileItem-ruleControls
+            .ComputedFile-ruleControls
                 display none
 
     &-ruleControls
@@ -251,38 +263,38 @@ line(direction = 'horizontal')
                 background #ddd
 
     &:hover
-        .FileItem-relativePath
+        .ComputedFile-relativePath
             span
                 overflow-x auto
 
     &.is-open
         padding-bottom 10px
 
-        .FileItem-rulesAndOptimizations--ruleDefs
+        .ComputedFile-rulesAndOptimizations--ruleDefs
             padding-bottom 10px
 
-        .FileItem-toggler
+        .ComputedFile-toggler
             &:before
                 content none
 
     &:not(.has-optimizations),
     &.is-open
-        .FileItem-rulesAndOptimizations--ruleDefs
-            .FileItem-rule
+        .ComputedFile-rulesAndOptimizations--ruleDefs
+            .ComputedFile-rule
                 &:after
                     content none
 
     &.has-rules:not(.has-optimizations):not(.is-open)
-        .FileItem-toggler
+        .ComputedFile-toggler
             &:after
                 content none
 
     &.has-rules:not(.is-open)
-        .FileItem-rule
+        .ComputedFile-rule
             &:before
                 content none
 
     &:not(.has-rules)
-        .FileItem-togglerButton
+        .ComputedFile-togglerButton
             display none
 </style>

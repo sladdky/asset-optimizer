@@ -1,15 +1,15 @@
 <template>
-    <div class="FileList">
-        <FileItemProvider v-for="file in files" :key="file.id" :file="file" :optimizations="allOptimizations" :rules="allRules" :ruleDefs="allRuleDefs" v-slot="{ computedFile }">
-            <FileItem class="FileList-item" :computedFile="computedFile" @addRule="handleFileItemAddRule" @deleteRule="handleFileItemDeleteRule" @updateRule="handleFileItemUpdateRule" @resetRule="handleFileItemResetRule" />
-        </FileItemProvider>
+    <div class="ComputedFileList">
+        <ComputedFileProvider v-for="file in files" :key="file.id" :file="file" :optimizations="allOptimizations" :rules="allRules" :ruleDefs="allRuleDefs" v-slot="{ computedFile }">
+            <ComputedFile class="ComputedFileList-item" :computedFile="computedFile" @addRule="handleComputedFileAddRule" @deleteRule="handleComputedFileDeleteRule" @updateRule="handleComputedFileUpdateRule" @resetRule="handleComputedFileResetRule" />
+        </ComputedFileProvider>
     </div>
 </template>
 
 <script lang="ts" setup>
 import { computed, ref } from 'vue'
-import FileItemProvider from './FileItemProvider.vue'
-import FileItem from './FileItem.vue'
+import ComputedFileProvider from './ComputedFileProvider.vue'
+import ComputedFile from './ComputedFile.vue'
 import { AssetOptimizerFile, AssetOptimizerOptimization, AssetOptimizerRule, AssetOptimizerRuleDef } from '@/types'
 import { useSocket } from '@/hooks'
 import { useFilter } from '@/hooks/useFilter'
@@ -37,23 +37,23 @@ const files = computed(() => {
 
 const { socket, onConnected } = useSocket()
 
-const handleFileItemAddRule = (rule: Omit<AssetOptimizerRule, 'id'>) => {
+const handleComputedFileAddRule = (rule: Omit<AssetOptimizerRule, 'id'>) => {
     socket.emit('rule:create', rule)
 }
 
-const handleFileItemDeleteRule = (id: number) => {
+const handleComputedFileDeleteRule = (id: number) => {
     socket.emit('rule:delete', id)
 }
 
-const handleFileItemUpdateRule = (rule: AssetOptimizerRule) => {
+const handleComputedFileUpdateRule = (rule: AssetOptimizerRule) => {
     socket.emit('rule:update', rule)
 }
 
-const handleFileItemResetRule = (id: number) => {
+const handleComputedFileResetRule = (id: number) => {
     socket.emit('rule:reset', id)
 }
 
-const handleFileItemOptimizationClick = (id: number) => {
+const handleComputedFileOptimizationClick = (id: number) => {
     socket.emit('rule:reset', id)
 }
 
@@ -128,9 +128,9 @@ onConnected(() => {
 </script>
 
 <style lang="stylus" scoped>
-.FileList
+.ComputedFileList
     padding 20px
-    .FileItem
+    .ComputedFile
         margin-bottom 2px
 
 </style>
