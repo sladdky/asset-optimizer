@@ -80,6 +80,7 @@ export type AssetOptimizerGenericRuleDef<
 export type AssetOptimizerCoreConfig = {
 	inputCwd: string;
 	outputCwd: string;
+	tempCwd: string;
 };
 
 export type AssetOptimizerFile = {
@@ -95,7 +96,7 @@ export type AssetOptimizerOptimization = {
 	fileId: number; //fluent id, after app restart it can change
 	relativePath: string;
 	ruleId: number;
-	modified: number
+	modified: number;
 } & IEntity;
 
 export type AssetOptimizerRule = {

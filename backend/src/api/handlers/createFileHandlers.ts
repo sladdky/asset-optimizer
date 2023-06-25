@@ -1,20 +1,25 @@
 import { FileRepository } from '../../core/repositories';
-import { AssetOptimizerFile, Response } from '../../types';
+import { AssetOptimizerFile, DownloadInfo, Response } from '../../types';
 import fs from 'fs/promises';
-import path from 'path'
-import { getPreviewImage } from '../common/getPreviewImage'
+import path from 'path';
+import { Server } from 'http';
+import { getPreviewImage, createArchiveFromFiles } from '../common';
 
 type Props = {
-	inputCwd: string
+	inputCwd: string;
+	tempCwd: string;
 	components: {
 		fileRepository: FileRepository;
 	};
 };
 
-export function createFileHandlers({ inputCwd, components }: Props) {
+export function createFileHandlers({ inputCwd, tempCwd, components }: Props) {
 	return {
-		deleteFile() {
-			//todo
+		deleteFile(id: number) {
+			const aoFile = components['fileRepository'].findById(id);
+			const fullpath = path.join(inputCwd, aoFile?.relativePath ?? '');
+
+			fs.rm(fullpath);
 		},
 		updateFile() {
 			//todo
@@ -27,9 +32,31 @@ export function createFileHandlers({ inputCwd, components }: Props) {
 		uploadFile() {
 			//todo
 		},
-		readFilePreviewImage(id: number, callback: (res: Response<string>) => void) {
-			const aoFile = components['fileRepository'].findById(id)
-			const fullpath = path.join(inputCwd, aoFile?.relativePath ?? '')
+		async downloadManyFile(ids: number[], callback: (res: Response<DownloadInfo>) => void) {
+			const aoFiles = components['fileRepository'].find({
+				query: {
+					id: {
+						$in: ids,
+					},
+				},
+			});
+
+			const relativePaths = aoFiles.map((aoFile) => aoFile.relativePath);
+			const archive = await createArchiveFromFiles(relativePaths, {
+				cwd: inputCwd,
+				tempCwd,
+			});
+
+			callback({
+				data: {
+					url: archive.url,
+					size: archive.size,
+				},
+			});
+		},
+		previewImageFile(id: number, callback: (res: Response<string>) => void) {
+			const aoFile = components['fileRepository'].findById(id);
+			const fullpath = path.join(inputCwd, aoFile?.relativePath ?? '');
 
 			callback({
 				data: getPreviewImage(fullpath),

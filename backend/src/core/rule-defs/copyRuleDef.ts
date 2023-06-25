@@ -5,7 +5,7 @@ const ruleDef: AssetOptimizerRuleDef = {
 	ruleName: 'copy',
 	ext: '',
 	processData() {
-		return {}
+		return {};
 	},
 	async optimize({ inputPath, createOptMeta: createOptMeta }) {
 		const optMeta = createOptMeta();

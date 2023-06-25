@@ -96,6 +96,8 @@ const handlePresetItemUpdatePresetRule = (presetRule: AssetOptimizerPresetRule) 
 
 <style lang="stylus" scoped>
 .PresetList
+    padding 0 20px 20px
+
     .PresetItem
         margin-bottom 2px
 </style>

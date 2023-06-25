@@ -5,6 +5,7 @@
         <Panel />
         <ComputedFileList />
         <Bubble />
+        <ContextMenu v-if="contextmenu.sources.length" />
     </div>
 </template>
 
@@ -14,6 +15,11 @@ import Filter from './components/Filter.vue'
 import Header from './components/Header.vue'
 import ComputedFileList from './components/ComputedFileList.vue'
 import Bubble from './components/Bubble.vue'
+import ContextMenu from './components/ContextMenu.vue'
+
+import { useContextMenu } from '@/hooks'
+
+const { contextmenu } = useContextMenu()
 </script>
 
 <style lang="stylus">
@@ -67,6 +73,9 @@ import Bubble from './components/Bubble.vue'
 
     --color-accent #ac3d39
     --color-accent-invert #ffffff
+
+    --color-success #3dac39
+    --color-success-invert #ffffff
 
 
 *, *:before, *:after
@@ -138,4 +147,15 @@ a
     &[href^=tel]
         text-decoration none
         color inherit
+
+[data-contextmenu]
+    user-select none
+    cursor default
+    padding 0 10px
+    margin 0 -10px
+    border 1px solid transparent
+
+[data-contextmenu="selected"]
+    background #eef
+    border-color #00f
 </style>

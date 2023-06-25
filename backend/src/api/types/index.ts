@@ -19,18 +19,28 @@ interface Success<T> {
 export type Response<T> = Error | Success<T>;
 
 export type AssetOptimizerApiConfig = {
-	inputCwd: string
+	inputCwd: string;
 	outputCwd: string;
+	tempCwd: string;
 	port: number;
 	socketOptions?: Partial<ServerOptions>;
+};
+
+export type UploadInfo = {
+	wssUrl: string;
+};
+
+export type DownloadInfo = {
+	url: string;
+	size: number;
 };
 
 export type AssetOptimizerApiClientEvents = {
 	'file:list': (callback: (res: Response<AssetOptimizerFile[]>) => void) => void;
 	'file:delete': (id: number) => void;
-	'file:update': (aoFile: AssetOptimizerFile) => void;
 	'file:create': (aoFile: Omit<AssetOptimizerFile, 'id'>) => Promise<void>;
-	'file:upload': () => void; //@todo
+	'file:upload': (ids: number[], callback: (res: Response<UploadInfo>) => void) => void;
+	'file:downloadmany': (ids: number[], callback: (res: Response<DownloadInfo>) => void) => void;
 	'file:previewimage': (id: number, callback: (res: Response<string>) => void) => void;
 
 	'rule:list': (callback: (res: Response<AssetOptimizerRule[]>) => void) => void;
@@ -51,6 +61,7 @@ export type AssetOptimizerApiClientEvents = {
 
 	'optimization:previewimage': (id: number, callback: (res: Response<string>) => void) => void;
 	'optimization:list': (callback: (res: Response<AssetOptimizerOptimization[]>) => void) => void;
+	'optimization:downloadmany': (ids: number[], callback: (res: Response<DownloadInfo>) => void) => void;
 
 	'ruledef:list': (callback: (res: Response<AssetOptimizerRuleDef[]>) => void) => void;
 };

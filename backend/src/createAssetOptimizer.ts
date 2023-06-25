@@ -7,6 +7,7 @@ import { AssetOptimizerCoreConfig } from './core/types';
 import Database from './core/database';
 import { FileRepository, OptimizationRepository, RuleRepository, PresetRepository, PresetRuleRepository } from './core/repositories';
 import path from 'path';
+import fs from 'fs';
 
 type AssetOptimizerWatchOptions = {
 	api: boolean;
@@ -23,6 +24,7 @@ export function createAssetOptimizer(config: AssetOptimizerConfig) {
 	const { core: coreConfig, api: apiConfig = {}, ui: uiConfig = {} } = config;
 
 	const tempCwd = path.join(coreConfig.inputCwd, '/.ao-data');
+	fs.mkdirSync(tempCwd, { recursive: true });
 
 	const db = new Database({ cwd: tempCwd, dbName: 'db', autosave: true });
 
@@ -33,7 +35,10 @@ export function createAssetOptimizer(config: AssetOptimizerConfig) {
 	const presetRuleRepository = new PresetRuleRepository(db, 'preset-rules');
 
 	const core = coreComposition({
-		config: coreConfig,
+		config: {
+			tempCwd,
+			...coreConfig,
+		},
 		components: {
 			fileRepository,
 			ruleRepository,
@@ -47,6 +52,7 @@ export function createAssetOptimizer(config: AssetOptimizerConfig) {
 		config: {
 			inputCwd: coreConfig.inputCwd,
 			outputCwd: coreConfig.outputCwd,
+			tempCwd,
 			port: 3011,
 			...apiConfig,
 		},

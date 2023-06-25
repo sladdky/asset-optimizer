@@ -1,9 +1,6 @@
 <template>
     <div class="Filter">
         <input type="text" placeholder="Search" v-model="filter.fileRelativePath">
-        <div>
-            <button class="Filter-presetOpener" @click="handlePresetClick">Presets</button>
-        </div>
         <input type="text" placeholder="Search" v-model="filter.optimizationRelativePath">
     </div>
 </template>
@@ -13,9 +10,6 @@ import { useFilter } from '@/hooks/useFilter'
 
 const { filter } = useFilter()
 
-const handlePresetClick = () => {
-    filter.isPresetsOpen = !filter.isPresetsOpen
-}
 </script>
 
 <style lang="stylus" scoped>
@@ -28,13 +22,6 @@ const handlePresetClick = () => {
     padding 15px
     background var(--color-primary)
     color var(--color-primary-invert)
-
-    &-presetOpener
-        background var(--color-primary-100)
-        color var(--color-primary-invert-100)
-        cursor pointer
-        padding 2px 10px
-        border-radius var(--border-radius)
 
     input
         border-radius var(--border-radius)

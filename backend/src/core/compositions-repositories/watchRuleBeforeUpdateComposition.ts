@@ -45,34 +45,31 @@ export function watchRuleBeforeUpdateComposition({ ruleDefs, components }: Props
 						$and: [
 							{
 								id: {
-									$ne: rule.id
-								}
+									$ne: rule.id,
+								},
 							},
 							{
-								fileId:{
-									$eq: rule.fileId
+								fileId: {
+									$eq: rule.fileId,
 								},
 							},
 							{
 								state: {
-									$eq: 'error'
-								}
-							}
-						]
-					}
-				})
+									$eq: 'error',
+								},
+							},
+						],
+					},
+				});
 
-				otherErroredRules.forEach(erroredRule => {
-					erroredRule.state = ''
-				})
+				otherErroredRules.forEach((erroredRule) => {
+					erroredRule.state = '';
+				});
 
-				components['ruleRepository'].updateMany(otherErroredRules)
+				components['ruleRepository'].updateMany(otherErroredRules);
 			}
 
 			return rule;
 		});
-
-
-
 	};
 }

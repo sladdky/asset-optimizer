@@ -8,7 +8,6 @@ type Props = {
 	};
 };
 
-
 // rule deleted
 // ----
 // 1. delete all optimizations associated to this preset
@@ -27,24 +26,24 @@ export function watchRuleDeleteComposition({ components }: Props) {
 				query: {
 					$and: [
 						{
-							fileId:{
-								$eq: rule.fileId
+							fileId: {
+								$eq: rule.fileId,
 							},
 						},
 						{
 							state: {
-								$eq: 'error'
-							}
-						}
-					]
-				}
-			})
+								$eq: 'error',
+							},
+						},
+					],
+				},
+			});
 
-			otherErroredRules.forEach(erroredRule => {
-				erroredRule.state = ''
-			})
+			otherErroredRules.forEach((erroredRule) => {
+				erroredRule.state = '';
+			});
 
-			components['ruleRepository'].updateMany(otherErroredRules)
+			components['ruleRepository'].updateMany(otherErroredRules);
 		});
 	};
 }

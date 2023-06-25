@@ -2,12 +2,11 @@ import { createQueue } from '../common';
 import { FileRepository, OptimizationRepository, RuleRepository } from '../repositories';
 import { AssetOptimizerRule, AssetOptimizerRuleDef } from '../types';
 import { runOptimizationForRuleComposition } from './runOptimizationForRuleComposition';
-import path from 'path';
-import fs from 'fs';
 
 type Props = {
 	inputCwd: string;
 	outputCwd: string;
+	tempCwd: string;
 	ruleDefs: AssetOptimizerRuleDef[];
 	components: {
 		fileRepository: FileRepository;
@@ -16,12 +15,7 @@ type Props = {
 	};
 };
 
-export function watchForOptimizationComposition({ inputCwd, outputCwd, ruleDefs, components }: Props) {
-	const tempCwd = path.join(inputCwd, '/.ao-data');
-
-	// fs.rmSync(path.join(tempCwd, '.optimized'), { recursive: true, force: true });
-	fs.mkdirSync(tempCwd, { recursive: true });
-
+export function watchForOptimizationComposition({ inputCwd, outputCwd, tempCwd, ruleDefs, components }: Props) {
 	const runOptimizationForRule = runOptimizationForRuleComposition({
 		inputCwd,
 		outputCwd,

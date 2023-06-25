@@ -23,12 +23,10 @@ const bubble = reactive<Bubble>({
 		this.isVisible = true
 	},
 	hide() {
-		console.log(_timer)
 		if (_timer) {
 			return
 		}
 		_timer = setTimeout(() => {
-			console.log('hide')
 			this.isVisible = false
 			_timer = undefined
 		}, 200);

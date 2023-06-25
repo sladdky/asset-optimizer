@@ -41,7 +41,6 @@ export function useForm<TFormFields extends object, TSchema>({ fields: _fields, 
 				}
 				errors[path].push(...error.errors)
 			})
-			console.log(errors)
 			isValid = false
 		} finally {
 			//

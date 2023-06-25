@@ -1,7 +1,7 @@
 <template>
     <article class="ComputedFile" :class="{ 'is-open': isOpen, 'has-rules': computedFile.rules.length, 'has-error': computedFile.hasErrors, 'has-optimizations': computedFile.optimizations.length }" v-if="!computedFile.file.isDir">
         <div class="ComputedFile-relativePath ComputedFile-relativePath--originalFile">
-            <FileRelativePath :file="computedFile.file" />
+            <File :file="computedFile.file" />
         </div>
         <div class="ComputedFile-toggler">
             <button class="ComputedFile-togglerButton" @click="isOpen = !isOpen"> {{ computedFile.rules.length }}
@@ -20,7 +20,7 @@
                 </div>
                 <div class="ComputedFile-optimizations">
                     <div class="ComputedFile-relativePath ComputedFile-relativePath--optimization" v-for="optimization in computedFile.optimizations" v-if="!isOpen" :key="optimization.id">
-                        <OptimizationRelativePath :optimization="optimization" />
+                        <Optimization :optimization="optimization" />
                     </div>
                 </div>
             </div>
@@ -39,7 +39,7 @@
                 </div>
                 <div class="ComputedFile-optimizations">
                     <div class="ComputedFile-relativePath ComputedFile-relativePath--optimization" v-for="optimization in computedFile.optimizations.filter(optimization => optimization.ruleId === rule.id)" :key="optimization.id">
-                        <OptimizationRelativePath :optimization="optimization" />
+                        <Optimization :optimization="optimization" />
                     </div>
                 </div>
             </div>
@@ -49,8 +49,8 @@
 
 <script lang="ts" setup>
 import Error from './Error.vue'
-import FileRelativePath from './FileRelativePath.vue'
-import OptimizationRelativePath from './OptimizationRelativePath.vue'
+import File from './File.vue'
+import Optimization from './Optimization.vue'
 import { AssetOptimizerOptimization, AssetOptimizerFile, AssetOptimizerRule, AssetOptimizerRuleDef } from '@/types'
 import { computed, defineAsyncComponent, ref } from 'vue'
 

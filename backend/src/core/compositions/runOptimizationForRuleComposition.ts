@@ -56,7 +56,7 @@ export function runOptimizationForRuleComposition({ inputCwd, outputCwd, tempCwd
 			});
 
 			if (collidingOptimizations.length) {
-				throw new Error(`File name collision. Paths: '${collidingOptimizations.map(opt => opt.relativePath).join(', ')}' already exist.`);
+				throw new Error(`File name collision. Paths: '${collidingOptimizations.map((opt) => opt.relativePath).join(', ')}' already exist.`);
 			}
 
 			for (const metaOptimization of meta.optimizations) {
@@ -71,7 +71,7 @@ export function runOptimizationForRuleComposition({ inputCwd, outputCwd, tempCwd
 					relativePath: metaOptimization.relativePath,
 					ruleId: rule.id,
 					fileId: rule.fileId,
-					modified: lstat.mtime.getTime()
+					modified: lstat.mtime.getTime(),
 				});
 			}
 

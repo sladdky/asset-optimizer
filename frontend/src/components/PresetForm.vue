@@ -58,6 +58,7 @@ const { socket } = useSocket()
     grid-template-columns 425px 170px
     gap 10px
     font-size 14px
+    padding 20px 20px 0
 
     &-button
         padding 5px 10px

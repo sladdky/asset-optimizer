@@ -1,4 +1,4 @@
-import { applyPresetsToFileComposition } from '../compositions/applyPresetsToFileComposition'
+import { applyPresetsToFileComposition } from '../compositions/applyPresetsToFileComposition';
 import { FileRepository, RuleRepository, PresetRepository, PresetRuleRepository } from '../repositories';
 import { AssetOptimizerFile, AssetOptimizerRuleDef } from '../types';
 
@@ -17,11 +17,11 @@ type Props = {
 // 1. find all presets that match filename regex and create rules for them
 //
 export function watchFileCreateComposition({ ruleDefs, components }: Props) {
-    return () => {
-        const applyPresetsToFile = applyPresetsToFileComposition({ruleDefs, components})
+	return () => {
+		const applyPresetsToFile = applyPresetsToFileComposition({ ruleDefs, components });
 
-        components['fileRepository'].on('create', (aoFile: AssetOptimizerFile) => {
-            applyPresetsToFile(aoFile)
+		components['fileRepository'].on('create', (aoFile: AssetOptimizerFile) => {
+			applyPresetsToFile(aoFile);
 		});
 	};
 }

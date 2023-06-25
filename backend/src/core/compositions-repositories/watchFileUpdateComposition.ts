@@ -14,7 +14,5 @@ type Props = {
 // 2. check if presetrules are still valid or some needs to be deleted/created
 //
 export function watchFileUpdateComposition({ components }: Props) {
-	return () => {
-
-	};
+	return () => {};
 }

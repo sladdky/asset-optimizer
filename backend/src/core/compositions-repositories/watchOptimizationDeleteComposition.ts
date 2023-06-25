@@ -1,16 +1,15 @@
 import { OptimizationRepository, RuleRepository } from '../repositories';
 import { AssetOptimizerOptimization } from '../types';
-import fs from 'fs'
-import path from 'path'
+import fs from 'fs';
+import path from 'path';
 
 type Props = {
-	outputCwd: string
+	outputCwd: string;
 	components: {
 		ruleRepository: RuleRepository;
 		optimizationRepository: OptimizationRepository;
 	};
 };
-
 
 // optimization deleted
 // ----
@@ -19,8 +18,8 @@ type Props = {
 export function watchOptimizationDeleteComposition({ outputCwd, components }: Props) {
 	return () => {
 		components['optimizationRepository'].on('delete', (optimization: AssetOptimizerOptimization) => {
-			const filename = path.join(outputCwd, optimization.relativePath)
-			fs.rmSync(filename)
+			const filename = path.join(outputCwd, optimization.relativePath);
+			fs.rmSync(filename);
 		});
 	};
 }
