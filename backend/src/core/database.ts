@@ -26,8 +26,8 @@ export default class Database implements IDatabase {
 			...options,
 		};
 
-		this.loki = new LokiJS(path.join(options.cwd, `${options.dbName}.json`), {
-			autosave: options.autosave,
+		this.loki = new LokiJS(path.join(options.cwd, `${this.options.dbName}.json`), {
+			autosave: this.options.autosave,
 		});
 
 		this.isLoaded = false;
@@ -51,7 +51,7 @@ export default class Database implements IDatabase {
 			return Promise.resolve();
 		}
 
-		this.loadPromise = new Promise<void>((resolve, reject) => {
+		this.loadPromise = new Promise<void>((resolve) => {
 			this.loki.loadDatabase({}, (error) => {
 				if (error) {
 					console.log(error);
@@ -66,7 +66,7 @@ export default class Database implements IDatabase {
 	}
 
 	save = () => {
-		return new Promise<void>((resolve, reject) => {
+		return new Promise<void>((resolve) => {
 			this.loki.saveDatabase(() => {
 				resolve();
 			});

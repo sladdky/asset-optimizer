@@ -1,4 +1,4 @@
-import { ID, IEntity } from '../repositories/Repository';
+import { IEntity } from '../repositories/Repository';
 
 export type AssetOptimizerFileMap = Record<string, Omit<AssetOptimizerFile, 'id'>>;
 

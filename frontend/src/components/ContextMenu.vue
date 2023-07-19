@@ -12,8 +12,8 @@
 </template>
 
 <script lang="ts" setup>
-import { useContextMenu, useSocket } from '@/hooks'
-import { ContextMenuSourceTypes } from '@/hooks/useContextMenu'
+import { useContextMenu, useSocket } from '@/shared-hooks'
+import { ContextMenuSourceTypes } from '@/shared-hooks/useContextMenu'
 import { computed, ref } from 'vue'
 
 const { contextmenu } = useContextMenu()

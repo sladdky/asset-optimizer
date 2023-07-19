@@ -2,6 +2,7 @@
     <div class="Panel" v-if="isVisible">
         <div class="Panel-item">
             <PresetSetup v-if="presetsetup.isOpen" />
+            <UploaderList v-if="ufiles.length" />
         </div>
     </div>
 </template>
@@ -9,11 +10,13 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
 import PresetSetup from './PresetSetup.vue'
-import { usePresetSetup } from '@/hooks'
+import UploaderList from './UploaderList.vue'
+import { usePresetSetup, useUploader } from '@/shared-hooks'
 
+const { ufiles } = useUploader()
 const { presetsetup } = usePresetSetup()
 
-const isVisible = computed(() => presetsetup.isOpen)
+const isVisible = computed(() => presetsetup.isOpen || ufiles.value.length)
 </script>
 
 <style lang="stylus" scoped>

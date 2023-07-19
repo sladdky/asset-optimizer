@@ -8,7 +8,7 @@
 <script lang="ts" setup>
 import PresetForm from './PresetForm.vue'
 import PresetList from './PresetList.vue'
-import { useSocket } from '@/hooks'
+import { useSocket } from '@/shared-hooks'
 import { AssetOptimizerRuleDef } from '@/types'
 import { ref } from 'vue'
 

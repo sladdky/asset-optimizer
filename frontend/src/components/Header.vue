@@ -6,7 +6,7 @@
 </template>
 
 <script lang="ts" setup>
-import { usePresetSetup } from '@/hooks'
+import { usePresetSetup } from '@/shared-hooks'
 
 
 const { presetsetup } = usePresetSetup()

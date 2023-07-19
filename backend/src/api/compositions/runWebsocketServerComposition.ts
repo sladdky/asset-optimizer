@@ -129,5 +129,9 @@ export function runWebsocketServerComposition({ inputCwd, outputCwd, tempCwd, co
 				socket.emit('presetrule:deleted', presetRule);
 			});
 		});
+
+		process.on('exit', () => {
+			io.close();
+		});
 	};
 }

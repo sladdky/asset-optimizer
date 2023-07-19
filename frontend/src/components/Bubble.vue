@@ -1,12 +1,12 @@
 <template>
     <div class="Bubble" :style="{ top: `${floaterProps.top}px`, left: `${floaterProps.left}px`, position: floaterProps.position }" v-show="bubble.isVisible" ref="floatingEl">
         <div class="Bubble-content" v-html="bubble.content"></div>
-        <div class="Bubble-arrow" ref="arrowEl" :style="{ top: arrowProps.top ? `${arrowProps.top}px` : ``, left: arrowProps.left ? `${arrowProps.left}px` : `` , right: arrowProps.right ? `${arrowProps.right}px` : `` , bottom: arrowProps.bottom ? `${arrowProps.bottom}px` : `` }"></div>
+        <div class="Bubble-arrow" ref="arrowEl" :style="{ top: arrowProps.top ? `${arrowProps.top}px` : ``, left: arrowProps.left ? `${arrowProps.left}px` : ``, right: arrowProps.right ? `${arrowProps.right}px` : ``, bottom: arrowProps.bottom ? `${arrowProps.bottom}px` : `` }"></div>
     </div>
 </template>
 
 <script lang="ts" setup>
-import { useBubble } from '@/hooks/useBubble'
+import { useBubble } from '@/shared-hooks'
 import { reactive, ref, watch } from 'vue'
 import { computePosition, flip, arrow } from '@floating-ui/dom'
 

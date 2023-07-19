@@ -3,6 +3,7 @@
         <Header />
         <Filter />
         <Panel />
+        <UploaderDropzone />
         <ComputedFileList />
         <Bubble />
         <ContextMenu v-if="contextmenu.sources.length" />
@@ -17,7 +18,8 @@ import ComputedFileList from './components/ComputedFileList.vue'
 import Bubble from './components/Bubble.vue'
 import ContextMenu from './components/ContextMenu.vue'
 
-import { useContextMenu } from '@/hooks'
+import { useContextMenu } from '@/shared-hooks'
+import UploaderDropzone from './components/UploaderDropzone.vue'
 
 const { contextmenu } = useContextMenu()
 </script>

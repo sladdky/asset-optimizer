@@ -12,7 +12,7 @@
 import { FormItem, FormInput, FormInputErrors, useForm, FormSelect } from '@/form'
 import { object, string } from 'yup'
 import { AssetOptimizerPreset } from '@/types'
-import { useSocket } from '@/hooks'
+import { useSocket } from '@/shared-hooks'
 
 type FormFields = {
     pattern: string

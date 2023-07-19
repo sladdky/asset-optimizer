@@ -1,7 +1,7 @@
 import sharp, { FitEnum } from 'sharp';
 import { AssetOptimizerRuleDef } from '../types';
 import { AssetOptimizerOptimizationMeta } from '../types';
-import { array, string, object, number, mixed } from 'yup';
+import { array, string, object, number } from 'yup';
 
 const ruleDef: AssetOptimizerRuleDef = {
 	ruleName: 'imageCrop',

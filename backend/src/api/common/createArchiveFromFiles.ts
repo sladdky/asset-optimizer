@@ -14,7 +14,7 @@ type ArchiveInfo = {
 };
 
 export function createArchiveFromFiles(relativePaths: string[], options: Options): Promise<ArchiveInfo> {
-	return new Promise((resolve, reject) => {
+	return new Promise((resolve) => {
 		const basename = `${nanoid()}.zip`;
 		const outputPath = path.join(options.tempCwd, '/.downloads/', basename);
 		fs.mkdirSync(path.dirname(outputPath), {

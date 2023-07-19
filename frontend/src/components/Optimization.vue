@@ -3,7 +3,7 @@
 </template>
 
 <script lang="ts" setup>
-import { useSocket, useBubble, useContextMenu } from '@/hooks'
+import { useSocket, useBubble, useContextMenu } from '@/shared-hooks'
 import { AssetOptimizerOptimization } from '@/types'
 import { ref } from 'vue'
 

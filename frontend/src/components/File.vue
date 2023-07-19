@@ -3,7 +3,7 @@
 </template>
 
 <script lang="ts" setup>
-import { useSocket, useBubble, useContextMenu } from '@/hooks'
+import { useSocket, useBubble, useContextMenu } from '@/shared-hooks'
 import { AssetOptimizerFile } from '@/types'
 import { ref } from 'vue'
 
@@ -19,20 +19,20 @@ const { vContextmenu } = useContextMenu()
 const { socket } = useSocket()
 
 const handleMouseEnter = () => {
-    socket.emit('file:previewimage', props.file.id, (res) => {
-        if ("error" in res) {
-            return
-        }
-        if (!rootEl.value) {
-            return
-        }
+    // socket.emit('file:previewimage', props.file.id, (res) => {
+    //     if ("error" in res) {
+    //         return
+    //     }
+    //     if (!rootEl.value) {
+    //         return
+    //     }
 
-        const base64 = res.data
-        bubble.content = `<img src="${base64}"/>`
-        bubble.anchorEl = rootEl.value
-        bubble.placement = 'right'
-        bubble.show()
-    })
+    //     const base64 = res.data
+    //     bubble.content = `<img src="${base64}"/>`
+    //     bubble.anchorEl = rootEl.value
+    //     bubble.placement = 'right'
+    //     bubble.show()
+    // })
 }
 
 const handleMouseLeave = () => {

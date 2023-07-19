@@ -2,7 +2,6 @@ import { FileRepository } from '../../core/repositories';
 import { AssetOptimizerFile, DownloadInfo, Response } from '../../types';
 import fs from 'fs/promises';
 import path from 'path';
-import { Server } from 'http';
 import { getPreviewImage, createArchiveFromFiles } from '../common';
 
 type Props = {

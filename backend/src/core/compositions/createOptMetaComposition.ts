@@ -8,7 +8,7 @@ type Props = {
 };
 
 export function createOptMetaComposition({ tempCwd }: Props) {
-	const tempDir = path.join(tempCwd, '/.optimized/');
+	const tempDir = path.join(tempCwd, '/.optimizations/');
 
 	fs.mkdirSync(tempDir, {
 		recursive: true,

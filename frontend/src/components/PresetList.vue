@@ -9,7 +9,7 @@
 <script lang="ts" setup>
 import PresetItemProvider from './PresetItemProvider.vue'
 import PresetItem from './PresetItem.vue'
-import { useSocket } from '@/hooks'
+import { useSocket } from '@/shared-hooks'
 import { AssetOptimizerPreset, AssetOptimizerPresetRule, AssetOptimizerRuleDef } from '@/types'
 import { ref } from 'vue'
 

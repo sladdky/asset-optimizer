@@ -11,8 +11,7 @@ import { computed, ref } from 'vue'
 import ComputedFileProvider from './ComputedFileProvider.vue'
 import ComputedFile from './ComputedFile.vue'
 import { AssetOptimizerFile, AssetOptimizerOptimization, AssetOptimizerRule, AssetOptimizerRuleDef } from '@/types'
-import { useSocket } from '@/hooks'
-import { useFilter } from '@/hooks/useFilter'
+import { useSocket, useFilter } from '@/shared-hooks'
 
 const allRuleDefs = ref<AssetOptimizerRuleDef[]>([])
 const allFiles = ref<AssetOptimizerFile[]>([])
@@ -50,10 +49,6 @@ const handleComputedFileUpdateRule = (rule: AssetOptimizerRule) => {
 }
 
 const handleComputedFileResetRule = (id: number) => {
-    socket.emit('rule:reset', id)
-}
-
-const handleComputedFileOptimizationClick = (id: number) => {
     socket.emit('rule:reset', id)
 }
 
@@ -97,6 +92,13 @@ socket.on('optimization:deleted', (optimization) => {
 })
 
 onConnected(() => {
+    socket.emit("ruledef:list", (res) => {
+        if ("error" in res) {
+            return
+        }
+        allRuleDefs.value = res.data
+    })
+
     socket.emit("file:list", (res) => {
         if ("error" in res) {
             return
@@ -116,13 +118,6 @@ onConnected(() => {
             return
         }
         allOptimizations.value = res.data
-    })
-
-    socket.emit("ruledef:list", (res) => {
-        if ("error" in res) {
-            return
-        }
-        allRuleDefs.value = res.data
     })
 })
 </script>

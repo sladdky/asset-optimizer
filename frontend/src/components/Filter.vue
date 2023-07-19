@@ -6,7 +6,7 @@
 </template>
 
 <script lang="ts" setup>
-import { useFilter } from '@/hooks/useFilter'
+import { useFilter } from '@/shared-hooks'
 
 const { filter } = useFilter()
 

@@ -1,6 +1,6 @@
 type Props<T> = {
 	maxConcurents: number;
-	onUnqueue: (item: T) => Record<string, any>;
+	onUnqueue: (item: T) => Promise<void>;
 	onStart: () => void;
 	onEnd: () => void;
 };
