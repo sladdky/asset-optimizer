@@ -1,6 +1,5 @@
 {
 	"name": "@sladdky/asset-optimizer-backend",
-	"version": "0.5.1",
 	"description": "Asset optimizer.",
 	"main": "lib/index.js",
 	"scripts": {
