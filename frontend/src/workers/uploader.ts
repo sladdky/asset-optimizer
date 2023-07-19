@@ -77,7 +77,6 @@ const createUploader = () => {
 		}
 
 		await requestFileUploadEnd(token)
-		console.log('end')
 
 		send({
 			action: 'EVENT_UPLOAD_END',

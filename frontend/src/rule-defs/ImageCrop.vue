@@ -67,7 +67,6 @@ watch(props.data, () => {
         variants: [],
         ...props.data
     }
-    console.log(data.value)
 },
     {
         deep: true,

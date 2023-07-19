@@ -45,7 +45,6 @@ const createUploader = () => {
 				ufiles.value = message.data
 				break
 			case 'EVENT_UPLOAD_END':
-				console.log(message.data.uid, 'upload file end')
 				removeUFileByUid(message.data.uid)
 				break
 		}
