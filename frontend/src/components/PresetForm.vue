@@ -9,7 +9,7 @@
 </template>
 
 <script lang="ts" setup>
-import { FormItem, FormInput, FormInputErrors, useForm, FormSelect } from '@/form'
+import { FormItem, FormInput, FormInputErrors, useForm, FormSelect } from '@/modules/form'
 import { object, string } from 'yup'
 import { AssetOptimizerPreset } from '@/types'
 import { useSocket } from '@/shared-hooks'
@@ -69,4 +69,4 @@ const { socket } = useSocket()
         color var(--color-primary-invert)
         cursor pointer
         border-radius var(--border-radius)
-</style>
+</style>@/modules/form

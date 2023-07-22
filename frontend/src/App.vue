@@ -1,10 +1,9 @@
 <template>
-    <div>
-        <Header />
-        <Filter />
-        <Panel />
-        <UploaderDropzone />
-        <ComputedFileList />
+    <div class="Layout">
+        <Header class="Layout-header" />
+        <Filter class="Layout-filter" />
+        <Panel class="Layout-panel" />
+        <ComputedFileList class="Layout-main" v-uploader />
         <Bubble />
         <ContextMenu v-if="contextmenu.sources.length" />
     </div>
@@ -17,11 +16,11 @@ import Header from './components/Header.vue'
 import ComputedFileList from './components/ComputedFileList.vue'
 import Bubble from './components/Bubble.vue'
 import ContextMenu from './components/ContextMenu.vue'
-
 import { useContextMenu } from '@/shared-hooks'
-import UploaderDropzone from './components/UploaderDropzone.vue'
+import { useUploader } from '@/modules/uploader'
 
 const { contextmenu } = useContextMenu()
+const { vUploader } = useUploader()
 </script>
 
 <style lang="stylus">
@@ -160,4 +159,20 @@ a
 [data-contextmenu="selected"]
     background #eef
     border-color #00f
+
+html,
+body,
+#app
+    height 100%
+
+.Layout
+    display flex
+    flex-flow column
+    height 100%
+
+    &-main
+        flex 1 1 auto
+
+    [data-uploader="highlighted"]
+        background #eee
 </style>

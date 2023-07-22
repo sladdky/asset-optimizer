@@ -10,7 +10,7 @@ import { ref } from 'vue'
 const { bubble } = useBubble()
 const rootEl = ref<HTMLElement>()
 
-const props = defineProps<{
+defineProps<{
     file: AssetOptimizerFile
 }>()
 

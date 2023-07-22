@@ -27,7 +27,7 @@ const handleMouseEnter = () => {
         }
 
         const base64 = res.data
-        bubble.content = `<img src="${base64}"/>`
+        bubble.content = `<img src="${base64 ? base64 : '/img/no-preview.svg'}"/>`
         bubble.anchorEl = rootEl.value
         bubble.placement = 'left'
         bubble.show()

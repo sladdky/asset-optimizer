@@ -50,7 +50,7 @@ const handleOptimizationDownloadClick = () => {
 
         const a = document.createElement('a')
         a.href = url,
-        a.download = ''
+            a.download = ''
         a.click()
         socket.disconnect()
         socket.connect()

@@ -1,54 +1,15 @@
-import { createQueue } from '../../../backend/src/core/common/createQueue'
+import { createQueue } from '../common/createQueue'
+import { UFile, Upload, WorkerListeningMessage, WorkerOutgoingMessage } from '../types'
 
-export type UFile = {
-	uid: string
-	file: File
-}
+class UserUploadAbortedError extends Error {}
 
-export type Upload = {
-	relativePath: string
-	token: string
-	size: number
-}
-
-export type ListeningMessage =
-	| {
-			action: 'REMOVE_FILE'
-			data: string
-	  }
-	| {
-			action: 'ADD_FILE'
-			data: UFile[]
-	  }
-	| {
-			action: 'LIST_FILE'
-			data: UFile[]
-	  }
-
-export type OutgoingMessage =
-	| {
-			action: 'RESPONSE_REMOVE_FILE'
-			data: string
-	  }
-	| {
-			action: 'RESPONSE_ADD_FILE'
-			data: UFile[]
-	  }
-	| {
-			action: 'RESPONSE_LIST_FILE'
-			data: UFile[]
-	  }
-	| {
-			action: 'EVENT_UPLOAD_END'
-			data: UFile
-	  }
-
-function send(message: OutgoingMessage) {
+function send(message: WorkerOutgoingMessage) {
 	self.postMessage(message)
 }
 
 const createUploader = () => {
 	const _ufiles: UFile[] = []
+	let shouldCheckUploadingUfiles = false
 
 	const onUnqueue = async (uid: UFile['uid']) => {
 		const ufile = _ufiles.find((_ufile) => _ufile.uid === uid)
@@ -56,32 +17,53 @@ const createUploader = () => {
 			return
 		}
 
-		const {token} = await requestFileUpload(ufile)
-		const BYTES_PER_CHUNK = 10 * 1024 * 1024 //10MB
+		const { token } = await requestFileUpload(ufile)
+		const BYTES_PER_CHUNK = 20 * 1024 * 1024 //20MB
 		const SIZE = ufile.file.size
 
 		let start = 0
 		let end = BYTES_PER_CHUNK
 		let chunkIndex = 0
 
-		while (start < SIZE) {
-			const chunk = ufile.file.slice(start, end)
-			try {
-				await uploadChunk(token, chunkIndex, chunk)
+		try {
+			while (start < SIZE) {
+				const chunk = ufile.file.slice(start, end)
+				const onProgress = (bytesTransfered: number) => {
+					if (shouldCheckUploadingUfiles) {
+						const ufile = _ufiles.find((_ufile) => _ufile.uid === uid)
+						if (!ufile) {
+							throw new UserUploadAbortedError()
+						}
+					}
+					send({
+						action: 'EVENT_UPLOAD_PROGRESS',
+						data: {
+							ufile,
+							progress: Math.min((start + bytesTransfered) / SIZE, 1),
+						},
+					})
+				}
+
+				await uploadChunk(token, chunkIndex, chunk, onProgress)
+				onProgress(BYTES_PER_CHUNK)
 				start = end
 				end = start + BYTES_PER_CHUNK
 				chunkIndex += 1
-			} catch (error) {
-				console.log(error)
+			}
+
+			await requestFileUploadEnd(token)
+
+			send({
+				action: 'EVENT_UPLOAD_END',
+				data: ufile,
+			})
+		} catch (error) {
+			if (error instanceof UserUploadAbortedError) {
+				//cleanup? some chunks were uploaded
+			} else {
+				throw error
 			}
 		}
-
-		await requestFileUploadEnd(token)
-
-		send({
-			action: 'EVENT_UPLOAD_END',
-			data: ufile,
-		})
 	}
 
 	const requestFileUpload = (ufile: UFile) => {
@@ -102,14 +84,16 @@ const createUploader = () => {
 			xhr.onabort = () => {
 				//@todo: retry?
 			}
-			xhr.send(JSON.stringify({
-				relativePath: ufile.file.name,
-				size: ufile.file.size
-			}))
+			xhr.send(
+				JSON.stringify({
+					relativePath: ufile.file.name,
+					size: ufile.file.size,
+				})
+			)
 		})
 	}
 
-	const uploadChunk = (token: string, chunkIndex: number, chunk: Blob) => {
+	const uploadChunk = (token: string, chunkIndex: number, chunk: Blob, onProgress: (bytesTransfered: number) => void) => {
 		return new Promise<void>((resolve, reject) => {
 			const xhr = new XMLHttpRequest()
 			xhr.open('POST', `http://localhost:3011/upload/${token}/${chunkIndex}`)
@@ -119,6 +103,16 @@ const createUploader = () => {
 				}
 
 				resolve()
+			}
+			xhr.upload.onprogress = (event) => {
+				try {
+					onProgress(event.loaded)
+				} catch (error) {
+					if (error instanceof UserUploadAbortedError) {
+						xhr.abort()
+						reject('Upload aborted by user.')
+					}
+				}
 			}
 			xhr.onerror = () => {
 				//@todo: wait for 30s and retry?
@@ -168,6 +162,8 @@ const createUploader = () => {
 		}
 		_ufiles.splice(index, 1)
 
+		shouldCheckUploadingUfiles = true
+
 		send({
 			action: 'RESPONSE_REMOVE_FILE',
 			data: uid,
@@ -179,7 +175,7 @@ const createUploader = () => {
 	}
 
 	const queue = createQueue<UFile['uid']>({
-		maxConcurents: 1,
+		maxConcurents: 3,
 		onUnqueue,
 	})
 
@@ -192,7 +188,7 @@ const createUploader = () => {
 const uploader = createUploader()
 
 self.onmessage = function (event) {
-	const message: ListeningMessage = event.data
+	const message: WorkerListeningMessage = event.data
 
 	switch (message.action) {
 		case 'REMOVE_FILE':
