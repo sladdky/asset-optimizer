@@ -1,8 +1,7 @@
 <template>
     <article class="PresetItem" :class="{ 'is-rulesetup-open': isRuleSetupOpen, 'has-rules': computedPreset.presetRules.length }">
         <span class="PresetItem-relativePath PresetItem-relativePath--originalFile">
-            <button class="PresetItem-delete" @click="emit('deletePreset', computedPreset.preset.id)">-</button>
-            <span>{{ computedPreset.preset.pattern }}</span>
+            <span v-contextmenu="{ 'type': 'Preset', id: computedPreset.preset.id }">{{ computedPreset.preset.pattern }}</span>
         </span>
         <div class="PresetItem-toggler">
             <button class="PresetItem-togglerButton" @click="isRuleSetupOpen = !isRuleSetupOpen"> {{ computedPreset.presetRules.length }} </button>
@@ -19,8 +18,7 @@
             <div class="PresetItem-rulesAndOptimizations" v-for="presetRule in computedPreset.presetRules" :key="presetRule.id" v-if="isRuleSetupOpen">
                 <div class="PresetItem-rule">
                     <span class="PresetItem-ruleName">
-                        <button class="PresetItem-delete" @click="emit('deletePresetRule', presetRule.id)">-</button>
-                        <span>{{ presetRule.ruleName }}</span>
+                        <span v-contextmenu="{ 'type': 'PresetRule', id: presetRule.id }">{{ presetRule.ruleName }}</span>
                     </span>
                     <component :is="RULE_DEFS_BY_NAME[presetRule.ruleName].component" :data="presetRule.data" @change="(data: any) => handleRuleChange({ ...presetRule, data })" />
                 </div>
@@ -30,6 +28,7 @@
 </template>
 
 <script lang="ts" setup>
+import { useContextMenu } from '@/shared-hooks'
 import { AssetOptimizerRuleDef, AssetOptimizerPreset, AssetOptimizerPresetRule } from '@/types'
 import { computed, defineAsyncComponent, ref } from 'vue'
 
@@ -67,11 +66,11 @@ const handleRuleChange = (data: AssetOptimizerPresetRule) => {
 
 const emit = defineEmits<{
     (event: 'updatePreset', rule: AssetOptimizerPreset): void
-    (event: 'deletePreset', id: number): void
     (event: 'addPresetRule', rule: Omit<AssetOptimizerPresetRule, 'id'>): void
-    (event: 'deletePresetRule', id: number): void
     (event: 'updatePresetRule', rule: AssetOptimizerPresetRule): void
 }>()
+
+const { vContextmenu } = useContextMenu()
 
 const isRuleSetupOpen = ref(false)
 </script>
@@ -187,18 +186,6 @@ line(direction = 'horizontal')
         padding-left 25px
         margin-left -25px
         flex 0 0 auto
-
-        &:not(:hover)
-            .PresetItem-delete
-                display none
-
-    &-delete
-        background: var(--color-accent);
-        color: var(--color-accent-invert);
-        border-radius var(--border-radius)
-        cursor pointer
-        width 20px
-        height 20px
 
     &.is-rulesetup-open
         padding-bottom 30px

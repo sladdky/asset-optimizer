@@ -27,11 +27,7 @@
             <div class="ComputedFile-rulesAndOptimizations" :class="{ 'has-error': rule.state === 'error' }" v-for="rule in computedFile.rules" :key="rule.id" v-if="isOpen">
                 <div class="ComputedFile-rule">
                     <span class="ComputedFile-ruleName">
-                        <div class="ComputedFile-ruleControls">
-                            <button class="ComputedFile-reset" @click="emit('resetRule', rule.id)">R</button>
-                            <button class="ComputedFile-delete" @click="emit('deleteRule', rule.id)" :disabled="!!rule.presetRuleId">-</button>
-                        </div>
-                        <span>{{ rule.ruleName }}</span>
+                        <span v-contextmenu="{ type: 'Rule', id: rule.id }">{{ rule.ruleName }}</span>
                     </span>
                     <span> {{ rule.state ? `${STATE_MESSAGES[rule.state]}` : `` }} </span>
                     <component :is="RULE_DEFS_BY_NAME[rule.ruleName]?.component" :data="rule.data" @change="(data: any) => handleRuleChange({ ...rule, data })" />
@@ -48,6 +44,7 @@
 </template>
 
 <script lang="ts" setup>
+import { useContextMenu } from '@/shared-hooks'
 import Error from './Error.vue'
 import File from './File.vue'
 import Optimization from './Optimization.vue'
@@ -106,6 +103,7 @@ const emit = defineEmits<{
     (event: 'optimizationLeave', id: number): void
 }>()
 
+const { vContextmenu } = useContextMenu()
 
 const isOpen = ref(false)
 </script>
@@ -240,27 +238,6 @@ line(direction = 'horizontal')
         padding-left 25px
         margin-left -25px
         flex 0 0 auto
-
-        &:not(:hover)
-            .ComputedFile-ruleControls
-                display none
-
-    &-ruleControls
-        display inline-flex
-        gap 2px
-        margin-right 10px
-
-        button
-            background: var(--color-accent);
-            color: var(--color-accent-invert);
-            border-radius var(--border-radius)
-            cursor pointer
-            width 24px
-            height 24px
-
-            &:disabled
-                cursor not-allowed
-                background #ddd
 
     &:hover
         .ComputedFile-relativePath

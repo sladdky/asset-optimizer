@@ -18,6 +18,18 @@ type ContextMenuSourceInfo =
 			type: 'Optimization'
 			id: number
 	  }
+	| {
+			type: 'Rule'
+			id: number
+	  }
+	| {
+			type: 'Preset'
+			id: number
+	  }
+	| {
+			type: 'PresetRule'
+			id: number
+	  }
 
 type ContextMenuSource = {
 	el: ContextMenuSourceElement

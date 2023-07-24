@@ -157,7 +157,7 @@ a
     border 1px solid transparent
 
 [data-contextmenu="selected"]
-    background #eef
+    background rgba(#eef,.8)
     border-color #00f
 
 html,

@@ -10,6 +10,11 @@ type Props = {
 export function createRuleHandlers({ components }: Props) {
 	return {
 		deleteRule(id: number) {
+			const rule = components['ruleRepository'].findById(id);
+			if (rule?.presetRuleId) {
+				console.error('cannot remove rule created by preset')
+				return
+			}
 			components['ruleRepository'].deleteById(id);
 		},
 		updateRule(rule: AssetOptimizerRule) {

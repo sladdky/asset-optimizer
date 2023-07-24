@@ -4,6 +4,10 @@
             <div class="ContextMenu-controls">
                 <button class="ContextMenu-delete" v-if="sourceCountsByType['AoFile']" @click="handleAoFileDeleteClick">Delete files ({{ sourceCountsByType['AoFile'] }})</button>
                 <button class="ContextMenu-download" :class="{ 'is-loading': isAoFileDownloadLoading }" v-if="sourceCountsByType['AoFile']" @click="handleAoFileDownloadClick">Download files ({{ sourceCountsByType['AoFile'] }})</button>
+                <button class="ContextMenu-delete" v-if="sourceCountsByType['Rule']" @click="handleRuleDeleteClick">Delete rules ({{ sourceCountsByType['Rule'] }})</button>
+                <button class="ContextMenu-delete" v-if="sourceCountsByType['Preset']" @click="handlePresetDeleteClick">Delete presets ({{ sourceCountsByType['Preset'] }})</button>
+                <button class="ContextMenu-delete" v-if="sourceCountsByType['PresetRule']" @click="handlePresetRuleDeleteClick">Delete preset rules ({{ sourceCountsByType['PresetRule'] }})</button>
+                <button class="ContextMenu-reset" v-if="sourceCountsByType['Rule']" @click="handleRuleResetClick">Reset rules ({{ sourceCountsByType['Rule'] }})</button>
                 <button class="ContextMenu-download" :class="{ 'is-loading': isOptimizationDownloadLoading }" v-if="sourceCountsByType['Optimization']" @click="handleOptimizationDownloadClick">Download optimizations ({{ sourceCountsByType['Optimization'] }})</button>
             </div>
             <span> {{ contextmenu.sources.length }} items selected <button @click="handleDeselectClick">deselect</button> </span>
@@ -27,8 +31,11 @@ const sourceCountsByType = computed(() => contextmenu.sources.reduce<Record<Cont
     return acc
 }, {
     'AoFile': 0,
+    'Rule': 0,
     'Unkown': 0,
     'Optimization': 0,
+    'PresetRule': 0,
+    'Preset': 0,
 }))
 
 
@@ -67,6 +74,44 @@ const handleAoFileDeleteClick = () => {
             }
         })
     }
+}
+
+const handlePresetDeleteClick = () => {
+    if (window.confirm('Yo sure?')) {
+        contextmenu.sources.forEach(source => {
+            if (source.info.type === 'Preset') {
+                socket.emit('preset:delete', source.info.id)
+            }
+        })
+    }
+}
+
+const handlePresetRuleDeleteClick = () => {
+    if (window.confirm('Yo sure?')) {
+        contextmenu.sources.forEach(source => {
+            if (source.info.type === 'PresetRule') {
+                socket.emit('presetrule:delete', source.info.id)
+            }
+        })
+    }
+}
+
+const handleRuleDeleteClick = () => {
+    if (window.confirm('Yo sure?')) {
+        contextmenu.sources.forEach(source => {
+            if (source.info.type === 'Rule') {
+                socket.emit('rule:delete', source.info.id)
+            }
+        })
+    }
+}
+
+const handleRuleResetClick = () => {
+    contextmenu.sources.forEach(source => {
+        if (source.info.type === 'Rule') {
+            socket.emit('rule:reset', source.info.id)
+        }
+    })
 }
 
 const isAoFileDownloadLoading = ref(false)
@@ -138,4 +183,8 @@ const handleDeselectClick = () => {
     &-download
         background var(--color-success)
         color var(--color-success-invert)
+
+    &-reset
+        background #ddd
+        color #000
 </style>
