@@ -2,6 +2,7 @@ import { AssetOptimizerCoreConfig, AssetOptimizerRuleDef } from './types';
 import { FileRepository, OptimizationRepository, RuleRepository, PresetRepository, PresetRuleRepository } from './repositories';
 import { watchFsFilesComposition, syncComposition, watchForOptimizationComposition, watchRepositoriesComposition } from './compositions';
 import { copyRuleDef, imageAutoRuleDef, imageCropRuleDef, svgAutoRuleDef, videoAutoRuleDef } from './rule-defs';
+import { log } from '../logger'
 
 type Props = {
 	config: Pick<AssetOptimizerCoreConfig, 'inputCwd' | 'outputCwd' | 'tempCwd'> & Partial<AssetOptimizerCoreConfig>;
@@ -41,7 +42,7 @@ export function coreComposition({ config, components }: Props) {
 
 	return {
 		start: async () => {
-			console.log('1/4 CORE:Synchronizing filesystem...');
+			log('CORE', 'Synchronizing filesystem...')
 			const sync = syncComposition({
 				inputCwd: config.inputCwd,
 				outputCwd: config.outputCwd,
@@ -50,7 +51,7 @@ export function coreComposition({ config, components }: Props) {
 			});
 			await sync();
 
-			console.log('2/4 CORE:Watching repositories ...');
+			log('CORE', 'Watching repositories...')
 			const watchRepositories = watchRepositoriesComposition({
 				outputCwd: config.outputCwd,
 				ruleDefs,
@@ -58,14 +59,14 @@ export function coreComposition({ config, components }: Props) {
 			});
 			watchRepositories();
 
-			console.log('3/4 CORE:Watching filesystem changes...');
+			log('CORE', 'Watching filesystem changes...')
 			const watchFsFiles = watchFsFilesComposition({
 				cwd: config.inputCwd,
 				components,
 			});
 			await watchFsFiles();
 
-			console.log('4/4 CORE:Watching for pending optimizations...');
+			log('CORE', 'Watching for pending optimizations...')
 			const watchForOptimization = watchForOptimizationComposition({
 				inputCwd: config.inputCwd,
 				outputCwd: config.outputCwd,

@@ -47,12 +47,9 @@ export function watchForOptimizationComposition({ inputCwd, outputCwd, tempCwd, 
 		}
 	};
 
-	let start = 0;
 	const queue = createQueue({
 		maxConcurents: 1, //1-10 seems to be ok, if you let create more promises, it slows down websocket communications drastically
 		onUnqueue: optimizeFile,
-		onStart: () => (start = performance.now()),
-		onEnd: () => console.log(performance.now() - start),
 	});
 
 	return async () => {

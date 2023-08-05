@@ -1,6 +1,6 @@
 import { getAoFile } from '../common';
 import { FileRepository } from '../repositories';
-import { debounce } from 'lodash';
+import debounce from 'lodash/debounce';
 import chokidar from 'chokidar';
 
 type Props = {
@@ -32,7 +32,7 @@ export function watchFsFilesComposition({ cwd, components }: Props) {
 						return;
 					}
 					components['fileRepository'].update(aoFile);
-				}, 500); //@todo debounce might not be enough, update triggers before fullcopy
+				}, 2000); //@todo debounce might not be enough, update triggers before fullcopy
 			}
 			queue[relativePath]();
 		};

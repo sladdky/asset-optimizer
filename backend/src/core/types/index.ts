@@ -118,3 +118,5 @@ export type AssetOptimizerPresetRule = {
 export type AssetOptimizerPreset = {
 	pattern: string;
 } & IEntity;
+
+export class OptimizationError extends Error {}

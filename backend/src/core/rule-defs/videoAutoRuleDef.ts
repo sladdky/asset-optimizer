@@ -1,6 +1,6 @@
 import ffmpegInstaller from '@ffmpeg-installer/ffmpeg';
 import ffmpeg from 'fluent-ffmpeg';
-import { AssetOptimizerRuleDef } from '../types';
+import { AssetOptimizerRuleDef, OptimizationError } from '../types';
 
 ffmpeg.setFfmpegPath(ffmpegInstaller.path);
 
@@ -12,16 +12,26 @@ const ruleDef: AssetOptimizerRuleDef = {
 	},
 	async optimize({ inputPath, createOptMeta: createOptMeta }) {
 		const optMeta = createOptMeta();
-		await new Promise<void>((resolve) => {
-			ffmpeg(inputPath)
-				.on('end', () => {
-					resolve();
-				})
-				.audioBitrate(100)
-				.videoBitrate(200)
-				.output(optMeta.tempPath)
-				.run();
-		});
+		try {
+			await new Promise<void>((resolve, reject) => {
+				ffmpeg(inputPath)
+					.on('end', () => {
+						resolve();
+					})
+					.on('error', (error) => {
+						reject(new Error('Error while ffmpeg conversion'));
+					})
+					.audioBitrate(100)
+					.videoBitrate(200)
+					.output(optMeta.tempPath)
+					.run();
+			});
+
+		} catch (error) {
+			if (error instanceof Error) {
+				throw new OptimizationError(error.message);
+			}
+		}
 
 		return {
 			optimizations: [optMeta],

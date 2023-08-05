@@ -122,6 +122,6 @@ dist
 
 
 dev/public/**/*
-dev/public-src/**/*
+dev/src/**/*
 dev/temp/**/*
 !.gitkeep

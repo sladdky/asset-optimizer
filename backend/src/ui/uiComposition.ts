@@ -1,6 +1,7 @@
 import express from 'express';
 import path from 'path';
 import { AssetOptimizerUiConfig } from './types';
+import { log } from '../logger'
 
 type Props = {
 	config: AssetOptimizerUiConfig;
@@ -9,7 +10,7 @@ type Props = {
 export function uiComposition({ config }: Props) {
 	return {
 		start: () => {
-			console.log(`1/1 UI:Starting express server at http://localhost:${config.port}`);
+			log('UI', `Starting express server at http://localhost:${config.port}`)
 
 			const app = express();
 

@@ -1,6 +1,7 @@
 import { Collection } from 'lokijs';
 import { IDatabase } from '../database';
 import { Emitter } from '../../_plugins/emitter';
+import { log } from '../../logger'
 
 interface FindOptions<T extends object> {
 	query: Parameters<Collection<T>['find']>[0];
@@ -103,7 +104,7 @@ export default class Repository<T extends IEntity> extends Emitter implements IR
 		try {
 			this.collection.update(entity);
 		} catch (error) {
-			console.log('Couldnt update document that is not in collection.');
+			log('CORE', 'Couldnt update document that is not in collection.', 'warning');
 		}
 		return true;
 	}

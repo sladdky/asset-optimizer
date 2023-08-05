@@ -4,6 +4,7 @@ import { FileRepository, OptimizationRepository, PresetRepository, PresetRuleRep
 import { runWebsocketServerComposition } from './compositions/runWebsocketServerComposition';
 import { AssetOptimizerApiConfig, AssetOptimizerRuleDef } from '../types';
 import { useCorsMiddlewareComposition, useDownloadableFilesComposition, useUploaderComposition } from './compositions';
+import { log } from '../logger';
 
 type Props = {
 	config: AssetOptimizerApiConfig;
@@ -23,20 +24,20 @@ export function apiComposition({ config, components }: Props) {
 			const expressApp = express();
 			const httpServer = http.createServer(expressApp);
 
-			console.log(`1/4 API:Attaching cors middleware`);
+			log('API', `Attaching cors middleware`);
 			const useCorsMiddleware = useCorsMiddlewareComposition({
 				expressApp,
 			});
 			useCorsMiddleware();
 
-			console.log(`2/4 API:Serving downlodable files`);
+			log('API', `Serving downlodable files`);
 			const serveDownloadableFiles = useDownloadableFilesComposition({
 				expressApp,
 				tempCwd: config.tempCwd,
 			});
 			serveDownloadableFiles();
 
-			console.log(`3/4 API:Serving downlodable files`);
+			log('API', `Serving uploading files`);
 			const serveUploader = useUploaderComposition({
 				expressApp,
 				tempCwd: config.tempCwd,
@@ -44,7 +45,7 @@ export function apiComposition({ config, components }: Props) {
 			});
 			serveUploader();
 
-			console.log(`4/4 API:Starting API at http://localhost:${config.port}`);
+			log('API', `Starting at http://localhost:${config.port}`);
 			const runWebsocketServer = runWebsocketServerComposition({
 				httpServer,
 				socketOptions: {

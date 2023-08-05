@@ -3,7 +3,7 @@ import { createAssetOptimizer } from '../src';
 
 const ao = createAssetOptimizer({
 	core: {
-		inputCwd: join(__dirname, 'public-src'),
+		inputCwd: join(__dirname, 'src'),
 		outputCwd: join(__dirname, 'public'),
 	},
 });

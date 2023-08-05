@@ -1,8 +1,10 @@
+import { log } from '../../logger'
 import { FileRepository, OptimizationRepository, RuleRepository } from '../repositories';
-import { AssetOptimizerRule, AssetOptimizerRuleDef } from '../types';
+import { AssetOptimizerRule, AssetOptimizerRuleDef, OptimizationError } from '../types';
 import { createOptMetaComposition } from './createOptMetaComposition';
 import fs from 'fs/promises';
 import path from 'path';
+
 
 type Props = {
 	inputCwd: string;
@@ -44,7 +46,7 @@ export function runOptimizationForRuleComposition({ inputCwd, outputCwd, tempCwd
 			const hasDuplicates = new Set(paths).size !== paths.length;
 
 			if (hasDuplicates) {
-				throw new Error(`File name collision. Optimization created 2 or more files with same name. Verify implementation.`);
+				throw new OptimizationError(`File name collision. Optimization created 2 or more files with same name. Verify implementation.`);
 			}
 
 			const collidingOptimizations = components['optimizationRepository'].find({
@@ -56,7 +58,9 @@ export function runOptimizationForRuleComposition({ inputCwd, outputCwd, tempCwd
 			});
 
 			if (collidingOptimizations.length) {
-				throw new Error(`File name collision. Paths: '${collidingOptimizations.map((opt) => opt.relativePath).join(', ')}' already exist.`);
+				throw new OptimizationError(
+					`File name collision. Paths: '${collidingOptimizations.map((opt) => opt.relativePath).join(', ')}' already exist.`
+				);
 			}
 
 			for (const metaOptimization of meta.optimizations) {
@@ -78,11 +82,11 @@ export function runOptimizationForRuleComposition({ inputCwd, outputCwd, tempCwd
 			rule.state = 'optimized';
 			components['ruleRepository'].update(rule);
 		} catch (error) {
-			if (error instanceof Error) {
+			if (error instanceof OptimizationError) {
 				rule.state = 'error';
 				rule.error = error.message;
 				components['ruleRepository'].update(rule);
-				console.error('\x1b[31m', `${rule.error}\n    file: '${rule.relativePath}'\n    rule: '${rule.ruleName}'`, '\x1b[30m');
+				log('CORE', rule.error, 'warning')
 				return;
 			}
 		}
