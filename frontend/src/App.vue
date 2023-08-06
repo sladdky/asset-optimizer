@@ -5,6 +5,7 @@
         <ComputedFileList class="Layout-main" v-uploader />
         <Bubble />
         <ContextMenu v-if="contextmenu.sources.length" />
+        <GlobalLoader />
     </div>
 </template>
 
@@ -14,6 +15,7 @@ import Header from './components/Header.vue'
 import ComputedFileList from './components/ComputedFileList.vue'
 import Bubble from './components/Bubble.vue'
 import ContextMenu from './components/ContextMenu.vue'
+import GlobalLoader from './components/GlobalLoader.vue'
 import { useContextMenu } from '@/shared-hooks'
 import { useUploader } from '@/modules/uploader'
 
