@@ -27,7 +27,7 @@ export function watchForOptimizationComposition({ inputCwd, outputCwd, tempCwd, 
 	const optimizeFile = async (fileId: number) => {
 		const aoFile = await components['fileRepository'].findById(fileId);
 		if (!aoFile) {
-			console.error(`FileID: ${fileId} doesnt exist`);
+			console.error(`CORE: Trying to optimize fileId: ${fileId}, but it doesnt exist anymore`);
 			return;
 		}
 

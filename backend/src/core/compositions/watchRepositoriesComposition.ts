@@ -4,6 +4,7 @@ import {
 	watchFileDeleteComposition,
 	watchFileUpdateComposition,
 	watchOptimizationDeleteComposition,
+	watchPresetBeforeUpdateComposition,
 	watchPresetDeleteComposition,
 	watchPresetRuleCreateComposition,
 	watchPresetRuleDeleteComposition,
@@ -39,6 +40,8 @@ export function watchRepositoriesComposition({ outputCwd, ruleDefs, components }
 		watchOptimizationDelete();
 		const watchPresetDelete = watchPresetDeleteComposition({ components });
 		watchPresetDelete();
+		const watchPresetBeforeUpdate = watchPresetBeforeUpdateComposition({ ruleDefs, components });
+		watchPresetBeforeUpdate();
 		const watchPresetRuleCreate = watchPresetRuleCreateComposition({ ruleDefs, components });
 		watchPresetRuleCreate();
 		const watchPresetRuleDelete = watchPresetRuleDeleteComposition({ components });

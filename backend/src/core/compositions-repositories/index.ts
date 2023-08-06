@@ -3,6 +3,7 @@ export { watchFileDeleteComposition } from './watchFileDeleteComposition';
 export { watchFileUpdateComposition } from './watchFileUpdateComposition';
 export { watchOptimizationDeleteComposition } from './watchOptimizationDeleteComposition';
 export { watchPresetDeleteComposition } from './watchPresetDeleteComposition';
+export { watchPresetBeforeUpdateComposition } from './watchPresetBeforeUpdateComposition';
 export { watchPresetRuleCreateComposition } from './watchPresetRuleCreateComposition';
 export { watchPresetRuleDeleteComposition } from './watchPresetRuleDeleteComposition';
 export { watchPresetRuleUpdateComposition } from './watchPresetRuleUpdateComposition';

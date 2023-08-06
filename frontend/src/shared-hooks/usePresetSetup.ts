@@ -1,11 +1,9 @@
 import { reactive, ref } from 'vue'
 
-const presetsetup = reactive({
-	isOpen: false
-})
+const isPresetSetupOpen = ref(false)
 
 export const usePresetSetup = () => {
 	return {
-		presetsetup,
+		isPresetSetupOpen,
 	}
 }

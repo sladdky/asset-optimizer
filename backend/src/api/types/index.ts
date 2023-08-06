@@ -51,7 +51,7 @@ export type AssetOptimizerApiClientEvents = {
 
 	'preset:list': (callback: (res: Response<AssetOptimizerPreset[]>) => void) => void;
 	'preset:delete': (id: number) => void;
-	'preset:update': (preset: AssetOptimizerPreset) => void;
+	'preset:renamepattern': (id:number, newPattern: string) => void;
 	'preset:create': (preset: Omit<AssetOptimizerPreset, 'id'>) => void;
 
 	'presetrule:list': (callback: (res: Response<AssetOptimizerPresetRule[]>) => void) => void;
@@ -64,6 +64,8 @@ export type AssetOptimizerApiClientEvents = {
 	'optimization:downloadmany': (ids: number[], callback: (res: Response<DownloadInfo>) => void) => void;
 
 	'ruledef:list': (callback: (res: Response<AssetOptimizerRuleDef[]>) => void) => void;
+
+	'other:createpresetdefaults': () => void;
 };
 
 export type AssetOptimizerApiServerEvents = {

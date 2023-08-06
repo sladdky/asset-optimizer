@@ -20,7 +20,7 @@
                     <span class="PresetItem-ruleName">
                         <span v-contextmenu="{ 'type': 'PresetRule', id: presetRule.id }">{{ presetRule.ruleName }}</span>
                     </span>
-                    <component :is="RULE_DEFS_BY_NAME[presetRule.ruleName].component" :data="presetRule.data" @change="(data: any) => handleRuleChange({ ...presetRule, data })" />
+                    <component :is="RULE_DEFS_BY_NAME[presetRule.ruleName].component" :data="presetRule.data" @change="(data: any) => handlePresetRuleChange({ ...presetRule, data })" />
                 </div>
             </div>
         </div>
@@ -60,12 +60,11 @@ const handleRuleDefClick = (ruleDef: ComputedPresetRuleDef) => {
     })
 }
 
-const handleRuleChange = (data: AssetOptimizerPresetRule) => {
+const handlePresetRuleChange = (data: AssetOptimizerPresetRule) => {
     emit('updatePresetRule', data)
 }
 
 const emit = defineEmits<{
-    (event: 'updatePreset', rule: AssetOptimizerPreset): void
     (event: 'addPresetRule', rule: Omit<AssetOptimizerPresetRule, 'id'>): void
     (event: 'updatePresetRule', rule: AssetOptimizerPresetRule): void
 }>()

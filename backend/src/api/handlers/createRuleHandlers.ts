@@ -1,4 +1,5 @@
 import { RuleRepository } from '../../core/repositories';
+import { log } from '../../logger'
 import { AssetOptimizerRule, Response } from '../../types';
 
 type Props = {
@@ -12,7 +13,7 @@ export function createRuleHandlers({ components }: Props) {
 		deleteRule(id: number) {
 			const rule = components['ruleRepository'].findById(id);
 			if (rule?.presetRuleId) {
-				console.error('cannot remove rule created by preset')
+				log('API','Cannot remove rule created by preset','warning')
 				return
 			}
 			components['ruleRepository'].deleteById(id);

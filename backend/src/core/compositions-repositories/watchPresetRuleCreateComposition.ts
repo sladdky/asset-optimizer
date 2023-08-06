@@ -35,12 +35,12 @@ export function watchPresetRuleCreateComposition({ ruleDefs, components }: Props
 					$and: [
 						{
 							relativePath: {
-								$regex: `^${preset.pattern}$`,
+								$regex: new RegExp(`^${preset.pattern}$`, 'i'),
 							},
 						},
 						{
 							ext: {
-								$regex: ruleDef.ext,
+								$regex: new RegExp(`^${ruleDef.ext}$`, 'i'),
 							},
 						},
 					],

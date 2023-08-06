@@ -1,8 +1,11 @@
 <template>
-    <div class="UploaderList">
-        <ul>
+    <div class="UploaderList" >
+        <ul v-if="uploader.ufiles.value.length">
             <li v-for="ufile in uploader.ufiles.value"><button @click="handleRemoveClick(ufile.uid)">-</button> <Progress :progress="ufile.progress" /> {{ ufile.file.name }}</li>
         </ul>
+        <div class="UploaderList-noResult" v-else>
+            No uploads at this moment.
+        </div>
     </div>
 </template>
 

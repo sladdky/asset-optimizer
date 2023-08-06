@@ -1,8 +1,10 @@
 <template>
     <div class="ComputedFileList">
-        <ComputedFileProvider v-for="file in files" :key="file.id" :file="file" :optimizations="allOptimizations" :rules="allRules" :ruleDefs="allRuleDefs" v-slot="{ computedFile }">
+        <ComputedFileProvider v-for="file in files" :key="file.id" :file="file" :optimizations="allOptimizations" :rules="allRules" :ruleDefs="allRuleDefs" v-slot="{ computedFile }" v-if="filesWithoutDirs">
             <ComputedFile class="ComputedFileList-item" :computedFile="computedFile" @addRule="handleComputedFileAddRule" @deleteRule="handleComputedFileDeleteRule" @updateRule="handleComputedFileUpdateRule" @resetRule="handleComputedFileResetRule" />
         </ComputedFileProvider>
+        <div class="ComputedFileList-noResult" v-if="!filesWithoutDirs && !isFilterInDefaultState">Nothing found. :(</div>
+        <div class="ComputedFileList-noResult" v-if="!filesWithoutDirs && isFilterInDefaultState"> Source folder is empty!<br> Drop files here or in your source folder. </div>
     </div>
 </template>
 
@@ -18,7 +20,7 @@ const allFiles = ref<AssetOptimizerFile[]>([])
 const allRules = ref<AssetOptimizerRule[]>([])
 const allOptimizations = ref<AssetOptimizerOptimization[]>([])
 
-const { filter } = useFilter()
+const { filter, isFilterInDefaultState } = useFilter()
 const files = computed(() => {
     let _files = allFiles.value
 
@@ -33,6 +35,7 @@ const files = computed(() => {
 
     return _files
 })
+const filesWithoutDirs = computed(() => files.value.filter(file => !file.isDir).length)
 
 const { socket, onConnected } = useSocket()
 
@@ -128,4 +131,10 @@ onConnected(() => {
     .ComputedFile
         margin-bottom 2px
 
+    &-noResult
+        display flex
+        justify-content center
+        align-items center
+        height 80vh
+        text-align center
 </style>

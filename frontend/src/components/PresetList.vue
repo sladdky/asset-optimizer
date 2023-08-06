@@ -1,8 +1,17 @@
 <template>
     <div class="PresetList">
-        <PresetItemProvider v-for="preset in allPresets" :key="preset.id" :preset="preset" :presetRules="allPresetRules" :ruleDefs="allRuleDefs" v-slot="{ computedPreset }">
-            <PresetItem :computedPreset="computedPreset" @updatePreset="handlePresetItemUpdatePreset" @deletePreset="handlePresetItemDeletePreset" @addPresetRule="handlePresetItemAddPresetRule" @deletePresetRule="handlePresetItemDeletePresetRule" @updatePresetRule="handlePresetItemUpdatePresetRule" />
+        <PresetItemProvider v-for="preset in allPresets" :key="preset.id" :preset="preset" :presetRules="allPresetRules" :ruleDefs="allRuleDefs" v-slot="{ computedPreset }" v-if="allPresets.length">
+            <PresetItem :computedPreset="computedPreset" @deletePreset="handlePresetItemDeletePreset" @addPresetRule="handlePresetItemAddPresetRule" @deletePresetRule="handlePresetItemDeletePresetRule" @updatePresetRule="handlePresetItemUpdatePresetRule" />
         </PresetItemProvider>
+        <div class="PresetList-noResult" v-else>
+            <!-- #todo as tooltip and info icon -->
+            No presets found.<br><br>
+            Presets make it easier to handle optimization automatically.<br>
+            1. Create a regex that will match every filename (including folders) in asset-optimizer.<br>
+            2. Add optimization rules to the created preset.<br>
+            3. Upload files to asset-optimizer. If the files match any regex, it will apply predefined rules.\
+            <button @click="handleCreateDefaultPresetsClick">Create default presets</button>
+        </div>
     </div>
 </template>
 
@@ -76,9 +85,6 @@ onConnected(() => {
 })
 
 
-const handlePresetItemUpdatePreset = (preset: AssetOptimizerPreset) => {
-    socket.emit('preset:update', preset)
-}
 const handlePresetItemDeletePreset = (id: number) => {
     socket.emit('preset:delete', id)
 }
@@ -90,6 +96,11 @@ const handlePresetItemDeletePresetRule = (id: number) => {
 }
 const handlePresetItemUpdatePresetRule = (presetRule: AssetOptimizerPresetRule) => {
     socket.emit('presetrule:update', presetRule)
+}
+
+const handleCreateDefaultPresetsClick = () => {
+    socket.emit('other:createpresetdefaults')
+
 }
 
 </script>

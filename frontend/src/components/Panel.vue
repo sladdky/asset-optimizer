@@ -1,23 +1,24 @@
 <template>
     <div class="Panel" v-if="isVisible">
-        <div class="Panel-item">
-            <PresetSetup v-if="presetsetup.isOpen" />
-            <UploaderList v-if="uploader.ufiles.value.length" />
-        </div>
+        <Filter v-if="isFilterOpen" />
+        <PresetSetup v-if="isPresetSetupOpen" />
+        <UploaderList v-if="isUploaderOpen" />
     </div>
 </template>
 
 <script lang="ts" setup>
 import { computed } from 'vue'
 import PresetSetup from './PresetSetup.vue'
-import { usePresetSetup } from '@/shared-hooks'
+import { usePresetSetup, useFilter } from '@/shared-hooks'
 import UploaderList from './UploaderList.vue'
+import Filter from './Filter.vue'
 import { useUploader } from '@/modules/uploader'
 
-const { uploader } = useUploader()
-const { presetsetup } = usePresetSetup()
+const { isFilterOpen } = useFilter()
+const { isUploaderOpen } = useUploader()
+const { isPresetSetupOpen } = usePresetSetup()
 
-const isVisible = computed(() => presetsetup.isOpen || uploader.ufiles.value.length)
+const isVisible = computed(() => isFilterOpen.value || isPresetSetupOpen.value || isUploaderOpen.value)
 </script>
 
 <style lang="stylus" scoped>
@@ -26,7 +27,7 @@ const isVisible = computed(() => presetsetup.isOpen || uploader.ufiles.value.len
     flex-flow column
     position sticky
     z-index 1
-    top 55px
+    top 0
     margin 0 0 50px
     background var(--color-primary-400)
 

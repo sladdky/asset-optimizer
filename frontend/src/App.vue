@@ -1,8 +1,7 @@
 <template>
     <div class="Layout">
-        <Header class="Layout-header" />
-        <Filter class="Layout-filter" />
-        <Panel class="Layout-panel" />
+        <Header/>
+        <Panel />
         <ComputedFileList class="Layout-main" v-uploader />
         <Bubble />
         <ContextMenu v-if="contextmenu.sources.length" />
@@ -11,7 +10,6 @@
 
 <script lang="ts" setup>
 import Panel from './components/Panel.vue'
-import Filter from './components/Filter.vue'
 import Header from './components/Header.vue'
 import ComputedFileList from './components/ComputedFileList.vue'
 import Bubble from './components/Bubble.vue'

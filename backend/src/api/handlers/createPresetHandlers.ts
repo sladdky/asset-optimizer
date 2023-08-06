@@ -1,5 +1,6 @@
 import { PresetRepository } from '../../core/repositories';
-import { AssetOptimizerPreset, Response } from '../../types';
+import { log } from '../../logger';
+import { AssetOptimizerPreset, AssetOptimizerPresetRule, AssetOptimizerRuleDef, Response } from '../../types';
 
 type Props = {
 	components: {
@@ -12,8 +13,15 @@ export function createPresetHandlers({ components }: Props) {
 		deletePreset(id: number) {
 			return components['presetRepository'].deleteById(id);
 		},
-		updatePreset(preset: AssetOptimizerPreset) {
-			return components['presetRepository'].update(preset);
+		renamePresetPattern(id: number, newPattern: string) {
+			const preset = components['presetRepository'].findById(id);
+			if (!preset) {
+				log('API', 'Preset with id ${id} not found', 'warning');
+				return;
+			}
+			const oldPreset = {...preset}
+			preset.pattern = newPattern;
+			return components['presetRepository'].update(preset, oldPreset);
 		},
 		listPreset(callback: (res: Response<AssetOptimizerPreset[]>) => void) {
 			callback({

@@ -105,7 +105,10 @@ export function useContextMenu() {
 				document.removeEventListener('mouseup', el._vContextMenuHandleDocumentMouseUp)
 			}
 
-			el._vContextMenuHandleMouseDown = () => {
+			el._vContextMenuHandleMouseDown = (event) => {
+				if (event.button !== 0) {
+					return
+				}
 				const wasAdded = contextmenu.toggleSource({
 					el,
 					info: binding.value,

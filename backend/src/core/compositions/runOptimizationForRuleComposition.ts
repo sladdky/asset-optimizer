@@ -22,6 +22,7 @@ export function runOptimizationForRuleComposition({ inputCwd, outputCwd, tempCwd
 	const createOptMeta = createOptMetaComposition({ tempCwd });
 
 	return async (rule: AssetOptimizerRule) => {
+
 		try {
 			const ruleDef = ruleDefs.find((_ruleDef) => _ruleDef.ruleName === rule.ruleName);
 			if (!ruleDef) {
@@ -78,7 +79,6 @@ export function runOptimizationForRuleComposition({ inputCwd, outputCwd, tempCwd
 					modified: lstat.mtime.getTime(),
 				});
 			}
-
 			rule.state = 'optimized';
 			components['ruleRepository'].update(rule);
 		} catch (error) {
@@ -89,6 +89,8 @@ export function runOptimizationForRuleComposition({ inputCwd, outputCwd, tempCwd
 				log('CORE', rule.error, 'warning')
 				return;
 			}
+
+			throw error
 		}
 	};
 }

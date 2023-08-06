@@ -2,6 +2,7 @@ import { getAoFile } from '../common';
 import { FileRepository } from '../repositories';
 import debounce from 'lodash/debounce';
 import chokidar from 'chokidar';
+import { DebouncedFunc } from 'lodash';
 
 type Props = {
 	cwd: string;
@@ -19,8 +20,8 @@ export function watchFsFilesComposition({ cwd, components }: Props) {
 			ignored: ['.ao-data'],
 		});
 
-		const queue: Record<string, () => void> = {};
-		const updateFile = (relativePath: string) => {
+		const queue: Record<string, DebouncedFunc<DebouncedFunc<() => void>>> = {};
+		const addOrUpdateFile = (relativePath: string) => {
 			if (!queue[relativePath]) {
 				queue[relativePath] = debounce(() => {
 					const aoFile = components['fileRepository'].findOne({
@@ -28,21 +29,24 @@ export function watchFsFilesComposition({ cwd, components }: Props) {
 							relativePath,
 						},
 					});
+
 					if (!aoFile) {
-						return;
+						const aoFile = getAoFile({
+							cwd,
+							relativePath,
+						});
+						components['fileRepository'].create(aoFile);
+					} else {
+						components['fileRepository'].update(aoFile);
 					}
-					components['fileRepository'].update(aoFile);
-				}, 2000); //@todo debounce might not be enough, update triggers before fullcopy
+				}, 500);
 			}
+			queue[relativePath].cancel();
 			queue[relativePath]();
 		};
 
 		watcher.on('add', (relativePath) => {
-			const aoFile = getAoFile({
-				cwd,
-				relativePath,
-			});
-			components['fileRepository'].create(aoFile);
+			addOrUpdateFile(relativePath);
 		});
 
 		watcher.on('addDir', (relativePath) => {
@@ -53,11 +57,14 @@ export function watchFsFilesComposition({ cwd, components }: Props) {
 			components['fileRepository'].create(aoFile);
 		});
 
-		watcher.on('change', async (relativePath) => {
-			updateFile(relativePath);
+		watcher.on('change', (relativePath) => {
+			addOrUpdateFile(relativePath);
 		});
 
 		watcher.on('unlink', (relativePath) => {
+			//file could still be transfering to fs or wasnt added to db yet => remove from queue
+			//@todo
+
 			components['fileRepository'].deleteWhere({
 				query: {
 					relativePath,

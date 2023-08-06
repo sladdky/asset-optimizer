@@ -18,20 +18,20 @@ const { vContextmenu } = useContextMenu()
 
 const { socket } = useSocket()
 const handleMouseEnter = () => {
-    socket.emit('optimization:previewimage', props.optimization.id, (res) => {
-        if ("error" in res) {
-            return
-        }
-        if (!rootEl.value) {
-            return
-        }
+    // socket.emit('optimization:previewimage', props.optimization.id, (res) => {
+    //     if ("error" in res) {
+    //         return
+    //     }
+    //     if (!rootEl.value) {
+    //         return
+    //     }
 
-        const base64 = res.data
-        bubble.content = `<img src="${base64 ? base64 : '/img/no-preview.svg'}"/>`
-        bubble.anchorEl = rootEl.value
-        bubble.placement = 'left'
-        bubble.show()
-    })
+    //     const base64 = res.data
+    //     bubble.content = `<img src="${base64 ? base64 : '/img/no-preview.svg'}"/>`
+    //     bubble.anchorEl = rootEl.value
+    //     bubble.placement = 'left'
+    //     bubble.show()
+    // })
 }
 
 const handleMouseLeave = () => {

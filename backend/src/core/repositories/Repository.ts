@@ -1,7 +1,7 @@
 import { Collection } from 'lokijs';
 import { IDatabase } from '../database';
 import { Emitter } from '../../_plugins/emitter';
-import { log } from '../../logger'
+import { log } from '../../logger';
 
 interface FindOptions<T extends object> {
 	query: Parameters<Collection<T>['find']>[0];
@@ -99,8 +99,11 @@ export default class Repository<T extends IEntity> extends Emitter implements IR
 		return this.collection.insert(newEntities);
 	}
 
-	public update(entity: T): boolean {
-		entity = this.emit('before-update', entity);
+	public update(entity: T, oldEntity?: T): boolean {
+		entity = this.emit('before-update', {
+			entity,
+			oldEntity,
+		});
 		try {
 			this.collection.update(entity);
 		} catch (error) {

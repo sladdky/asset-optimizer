@@ -6,6 +6,7 @@
                 <button class="ContextMenu-download" :class="{ 'is-loading': isAoFileDownloadLoading }" v-if="sourceCountsByType['AoFile']" @click="handleAoFileDownloadClick">Download files ({{ sourceCountsByType['AoFile'] }})</button>
                 <button class="ContextMenu-delete" v-if="sourceCountsByType['Rule']" @click="handleRuleDeleteClick">Delete rules ({{ sourceCountsByType['Rule'] }})</button>
                 <button class="ContextMenu-delete" v-if="sourceCountsByType['Preset']" @click="handlePresetDeleteClick">Delete presets ({{ sourceCountsByType['Preset'] }})</button>
+                <button class="ContextMenu-reset" v-if="sourceCountsByType['Preset']" @click="handlePresetRenameClick">Rename presets ({{ sourceCountsByType['Preset'] }})</button>
                 <button class="ContextMenu-delete" v-if="sourceCountsByType['PresetRule']" @click="handlePresetRuleDeleteClick">Delete preset rules ({{ sourceCountsByType['PresetRule'] }})</button>
                 <button class="ContextMenu-reset" v-if="sourceCountsByType['Rule']" @click="handleRuleResetClick">Reset rules ({{ sourceCountsByType['Rule'] }})</button>
                 <button class="ContextMenu-download" :class="{ 'is-loading': isOptimizationDownloadLoading }" v-if="sourceCountsByType['Optimization']" @click="handleOptimizationDownloadClick">Download optimizations ({{ sourceCountsByType['Optimization'] }})</button>
@@ -84,6 +85,38 @@ const handlePresetDeleteClick = () => {
             }
         })
     }
+}
+
+const handlePresetRenameClick = () => {
+    contextmenu.sources.forEach(source => {
+        if (source.info.type === 'Preset') {
+            const presetId = source.info.id
+            const patternEl = source.el
+            const pattern = patternEl.innerText
+            const handleBlur = () => {
+                finalize()
+            }
+            const handleKeyDown = (event: KeyboardEvent) => {
+                if (event.code !== 'Enter') {
+                    return
+                }
+                finalize()
+            }
+            const finalize = () => {
+                patternEl.removeAttribute('contentEditable')
+                patternEl.removeEventListener('blur', handleBlur)
+                patternEl.removeEventListener('keydown', handleKeyDown)
+                const newPattern = patternEl.innerText
+                if (pattern !== newPattern) {
+                    socket.emit('preset:renamepattern', presetId, newPattern)
+                }
+            }
+            patternEl.setAttribute('contentEditable', 'true')
+            patternEl.addEventListener('blur', handleBlur)
+            patternEl.addEventListener('keydown', handleKeyDown)
+            patternEl.focus()
+        }
+    })
 }
 
 const handlePresetRuleDeleteClick = () => {

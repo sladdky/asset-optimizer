@@ -10,7 +10,7 @@ type Props = {
 export function uiComposition({ config }: Props) {
 	return {
 		start: () => {
-			log('UI', `Starting express server at http://localhost:${config.port}`)
+			log('UI', `Starting express server at \x1b[0m\x1b[34mhttp://localhost:${config.port}/\x1b[2m`)
 
 			const app = express();
 

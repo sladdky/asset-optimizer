@@ -1,5 +1,5 @@
 import sharp from 'sharp';
-import { AssetOptimizerRuleDef } from '../types';
+import { AssetOptimizerRuleDef, OptimizationError } from '../types';
 
 const ruleDef: AssetOptimizerRuleDef = {
 	ruleName: 'imageAuto',
@@ -8,7 +8,7 @@ const ruleDef: AssetOptimizerRuleDef = {
 		return {};
 	},
 	async optimize({ inputPath, createOptMeta: createOptMeta }) {
-		const sharpedFile = sharp(inputPath);
+		const sharpedFile = sharp(inputPath, { failOnError: false });
 
 		const optMeta = createOptMeta({
 			ext: (ext) => ext.toLowerCase(),
@@ -17,11 +17,12 @@ const ruleDef: AssetOptimizerRuleDef = {
 		await new Promise<void>((resolve, reject) => {
 			sharpedFile.toFile(optMeta.tempPath, (error) => {
 				if (error) {
-					reject(error);
+					reject(new OptimizationError(error.message));
 				}
 				resolve();
 			});
 		});
+
 
 		return {
 			optimizations: [optMeta],

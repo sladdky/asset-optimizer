@@ -27,9 +27,9 @@ const { filter } = useFilter()
         border-radius var(--border-radius)
         padding 2px 10px
         background var(--color-primary-100)
-        color var(--color-primary-invert-600)
+        color var(--color-primary)
 
         &::placeholder
-            color var(--color-primary)
+            color var(--color-primary-300)
 
 </style>

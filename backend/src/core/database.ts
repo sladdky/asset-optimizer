@@ -35,7 +35,9 @@ export default class Database implements IDatabase {
 	}
 
 	getCollection(collectionName: string) {
-		return this.loki.getCollection(collectionName) || this.loki.addCollection(collectionName);
+		return this.loki.getCollection(collectionName) || this.loki.addCollection(collectionName, {
+			autoupdate: false
+		});
 	}
 
 	removeCollection(collectionName: string) {

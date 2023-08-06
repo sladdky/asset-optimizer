@@ -2,7 +2,14 @@ import { Server, ServerOptions } from 'socket.io';
 import { Server as HttpServer } from 'http';
 import { FileRepository, OptimizationRepository, PresetRepository, PresetRuleRepository, RuleRepository } from '../../core/repositories';
 import { AssetOptimizerApiClientEvents, AssetOptimizerApiServerEvents } from '../types';
-import { createFileHandlers, createRuleHandlers, createOptimizationHandlers, createRuleDefHandlers, createPresetRuleHandlers } from '../handlers';
+import {
+	createFileHandlers,
+	createRuleHandlers,
+	createOptimizationHandlers,
+	createRuleDefHandlers,
+	createPresetRuleHandlers,
+	createOtherHandlers,
+} from '../handlers';
 import {
 	AssetOptimizerFile,
 	AssetOptimizerOptimization,
@@ -42,8 +49,9 @@ export function runWebsocketServerComposition({ inputCwd, outputCwd, tempCwd, co
 			const { listRule, deleteRule, updateRule, createRule, resetRule } = createRuleHandlers({ components });
 			const { listOptimization, previewImageOptimization, downloadManyOptimization } = createOptimizationHandlers({ outputCwd, tempCwd, components });
 			const { listRuleDef } = createRuleDefHandlers({ components });
-			const { listPreset, deletePreset, updatePreset, createPreset } = createPresetHandlers({ components });
+			const { listPreset, deletePreset, renamePresetPattern, createPreset } = createPresetHandlers({ components });
 			const { listPresetRule, deletePresetRule, updatePresetRule, createPresetRule } = createPresetRuleHandlers({ components });
+			const { createPresetDefaultsOther } = createOtherHandlers({ components });
 
 			socket.on('file:list', listFile);
 			socket.on('file:delete', deleteFile);
@@ -60,7 +68,7 @@ export function runWebsocketServerComposition({ inputCwd, outputCwd, tempCwd, co
 
 			socket.on('preset:list', listPreset);
 			socket.on('preset:delete', deletePreset);
-			socket.on('preset:update', updatePreset);
+			socket.on('preset:renamepattern', renamePresetPattern);
 			socket.on('preset:create', createPreset);
 
 			socket.on('presetrule:list', listPresetRule);
@@ -73,6 +81,8 @@ export function runWebsocketServerComposition({ inputCwd, outputCwd, tempCwd, co
 			socket.on('optimization:list', listOptimization);
 
 			socket.on('ruledef:list', listRuleDef);
+
+			socket.on('other:createpresetdefaults', createPresetDefaultsOther);
 
 			//@todo emit,listeners by generic type??????
 			components['fileRepository'].on('create', (aoFile: AssetOptimizerFile) => {
