@@ -11,7 +11,7 @@ export function getAoFile({ cwd, relativePath }: Props): Omit<AssetOptimizerFile
 	const fullPath = path.join(cwd, relativePath);
 	const lstat = fs.lstatSync(fullPath);
 	return {
-		ext: path.extname(relativePath).toLowerCase(),
+		ext: path.extname(relativePath)?.split('.')[1].toLowerCase(),
 		relativePath,
 		modified: lstat.mtime.getTime(),
 		isDir: lstat.isDirectory(),

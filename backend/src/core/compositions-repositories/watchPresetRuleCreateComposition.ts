@@ -40,7 +40,7 @@ export function watchPresetRuleCreateComposition({ ruleDefs, components }: Props
 						},
 						{
 							ext: {
-								$regex: new RegExp(`^${ruleDef.ext}$`, 'i'),
+								$regex: new RegExp(`${ruleDef.ext}`, 'i'),
 							},
 						},
 					],

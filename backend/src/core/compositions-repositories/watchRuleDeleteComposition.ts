@@ -10,7 +10,7 @@ type Props = {
 
 // rule deleted
 // ----
-// 1. delete all optimizations associated to this preset
+// 1. delete all optimizations associated to this rule
 // 2. run all errored optimizations for the file. Some might be resolved by removing others
 //
 export function watchRuleDeleteComposition({ components }: Props) {

@@ -27,7 +27,6 @@ export function applyPresetsToFileComposition({ ruleDefs, components }: Props) {
 				presetRules.forEach((presetRule) => {
 					const ruleDef = ruleDefs.find((ruleDef) => ruleDef.ruleName === presetRule.ruleName);
 					if (!ruleDef) {
-						console.log('rulename doesnt exist');
 						// Invalid ruleName on presetrule. Couldnt find ruleDef.
 						return;
 					}
