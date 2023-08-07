@@ -16,7 +16,7 @@ export function applyPresetsToFileComposition({ ruleDefs, components }: Props) {
 		const presets = components['presetRepository'].findAll();
 
 		try {
-			const matchingPresets = presets.filter((preset) => aoFile.relativePath.match(preset.pattern));
+			const matchingPresets = presets.filter((preset) => aoFile.relativePath.match(new RegExp(`^${preset.pattern}$`, 'i'),));
 			matchingPresets.forEach((preset) => {
 				const presetRules = components['presetRuleRepository'].find({
 					query: {

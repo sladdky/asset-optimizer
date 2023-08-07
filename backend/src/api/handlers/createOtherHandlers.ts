@@ -12,7 +12,7 @@ export function createOtherHandlers({ components }: Props) {
 	return {
 		createPresetDefaultsOther() {
 			const patterns: Record<string, Omit<AssetOptimizerPresetRule, 'id' | 'presetId'>[]> = {
-				'.*(jpg|png)': [
+				'.*(jpe?g|png)': [
 					{
 						ruleName: 'imageAuto',
 						data: {},
