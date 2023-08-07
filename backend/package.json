@@ -1,6 +1,7 @@
 {
 	"name": "@sladdky/asset-optimizer-backend",
-	"description": "Asset optimizer.",
+	"private": true,
+	"description": "Asset Optimizer Backend",
 	"main": "lib/index.js",
 	"scripts": {
 		"dev": "ts-node-dev dev/index.ts",
@@ -15,17 +16,6 @@
 		"version": "npm run format && git add -A src",
 		"postversion": "git push && git push --tags"
 	},
-	"repository": {
-		"type": "git",
-		"url": "git+ssh://git@github.com:sladdky/asset-optimizer.git"
-	},
-	"keywords": [
-		"assets",
-		"optimize"
-	],
-	"author": "Michal Sladký",
-	"license": "MIT",
-	"homepage": "https://github.com/sladdky/asset-optimizer#readme",
 	"devDependencies": {
 		"@types/archiver": "^5.3.2",
 		"@types/concat-stream": "^2.0.0",
@@ -59,8 +49,5 @@
 		"socket.io": "^4.7.2",
 		"svgo": "^3.0.2",
 		"yup": "^1.2.0"
-	},
-	"files": [
-		"lib/**/*"
-	]
+	}
 }

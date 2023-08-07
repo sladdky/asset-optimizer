@@ -51,7 +51,7 @@ export type AssetOptimizerApiClientEvents = {
 
 	'preset:list': (callback: (res: Response<AssetOptimizerPreset[]>) => void) => void;
 	'preset:delete': (id: number) => void;
-	'preset:renamepattern': (id:number, newPattern: string) => void;
+	'preset:renamepattern': (id: number, newPattern: string) => void;
 	'preset:create': (preset: Omit<AssetOptimizerPreset, 'id'>) => void;
 
 	'presetrule:list': (callback: (res: Response<AssetOptimizerPresetRule[]>) => void) => void;

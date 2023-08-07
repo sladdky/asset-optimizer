@@ -26,7 +26,6 @@ const ruleDef: AssetOptimizerRuleDef = {
 					.output(optMeta.tempPath)
 					.run();
 			});
-
 		} catch (error) {
 			if (error instanceof Error) {
 				throw new OptimizationError(error.message);

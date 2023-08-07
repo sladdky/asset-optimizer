@@ -1,10 +1,9 @@
-import { log } from '../../logger'
+import { log } from '../../logger';
 import { FileRepository, OptimizationRepository, RuleRepository } from '../repositories';
 import { AssetOptimizerRule, AssetOptimizerRuleDef, OptimizationError } from '../types';
 import { createOptMetaComposition } from './createOptMetaComposition';
 import fs from 'fs/promises';
 import path from 'path';
-
 
 type Props = {
 	inputCwd: string;
@@ -22,7 +21,6 @@ export function runOptimizationForRuleComposition({ inputCwd, outputCwd, tempCwd
 	const createOptMeta = createOptMetaComposition({ tempCwd });
 
 	return async (rule: AssetOptimizerRule) => {
-
 		try {
 			const ruleDef = ruleDefs.find((_ruleDef) => _ruleDef.ruleName === rule.ruleName);
 			if (!ruleDef) {
@@ -86,11 +84,11 @@ export function runOptimizationForRuleComposition({ inputCwd, outputCwd, tempCwd
 				rule.state = 'error';
 				rule.error = error.message;
 				components['ruleRepository'].update(rule);
-				log('CORE', rule.error, 'warning')
+				log('CORE', rule.error, 'warning');
 				return;
 			}
 
-			throw error
+			throw error;
 		}
 	};
 }

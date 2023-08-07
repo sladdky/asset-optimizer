@@ -24,7 +24,7 @@ export function coreComposition({ config, components }: Props) {
 
 	const addRuleDef = (ruleDef: AssetOptimizerRuleDef, options: Partial<AddRuleDefOptions> = {}) => {
 		if (ruleDefs.find((_ruleDef) => _ruleDef.ruleName === ruleDef.ruleName) && !options.override) {
-			log('CORE',`Rule '${ruleDef.ruleName}' already exists. If you wish to override the rule, pass {override:true} to options.`, 'warning');
+			log('CORE', `Rule '${ruleDef.ruleName}' already exists. If you wish to override the rule, pass {override:true} to options.`, 'warning');
 		}
 
 		ruleDefs.push(ruleDef);

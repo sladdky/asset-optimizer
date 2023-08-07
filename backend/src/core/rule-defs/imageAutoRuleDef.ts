@@ -23,7 +23,6 @@ const ruleDef: AssetOptimizerRuleDef = {
 			});
 		});
 
-
 		return {
 			optimizations: [optMeta],
 		};

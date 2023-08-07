@@ -118,13 +118,13 @@ export function syncComposition({ inputCwd, outputCwd, ruleDefs, components }: P
 
 			//optimized file changed in fs manually => drop it and create new through asset-optimizer
 			if (optimization.modified !== fsAoFile.modified) {
-				optimizationsToDelete.push(optimization)
+				optimizationsToDelete.push(optimization);
 				continue;
 			}
 
 			//optimized file exists in fs but doesnt have rule, we have no record how it was created => delete optimization
 			if (!components['ruleRepository'].findById(optimization.ruleId)) {
-				optimizationsToDelete.push(optimization)
+				optimizationsToDelete.push(optimization);
 				continue;
 			}
 		}
@@ -170,7 +170,7 @@ export function syncComposition({ inputCwd, outputCwd, ruleDefs, components }: P
 			}
 
 			//rule was created byt presetrule but presetrule no longer exists => delete rule
-			if ((rule.presetRuleId && !components['presetRuleRepository'].findById(rule.presetRuleId))) {
+			if (rule.presetRuleId && !components['presetRuleRepository'].findById(rule.presetRuleId)) {
 				rulesToDelete.push(rule);
 			}
 		});

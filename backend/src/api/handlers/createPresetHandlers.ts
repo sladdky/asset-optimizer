@@ -19,7 +19,7 @@ export function createPresetHandlers({ components }: Props) {
 				log('API', 'Preset with id ${id} not found', 'warning');
 				return;
 			}
-			const oldPreset = {...preset}
+			const oldPreset = { ...preset };
 			preset.pattern = newPattern;
 			return components['presetRepository'].update(preset, oldPreset);
 		},
