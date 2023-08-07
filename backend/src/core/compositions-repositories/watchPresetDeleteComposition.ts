@@ -16,7 +16,7 @@ type Props = {
 export function watchPresetDeleteComposition({ components }: Props) {
 	return () => {
 		components['presetRepository'].on('delete', (preset: AssetOptimizerRule) => {
-			components['presetRuleRepository'].find({
+			components['presetRuleRepository'].deleteWhere({
 				query: {
 					presetId: {
 						$eq: preset.id,
