@@ -27,12 +27,13 @@ export function createAssetOptimizer(config: AssetOptimizerConfig) {
 	fs.mkdirSync(tempCwd, { recursive: true });
 
 	const db = new Database({ cwd: tempCwd, dbName: 'db', autosave: true });
+	const db2 = new Database({ cwd: tempCwd, dbName: 'db-presets', autosave: true });
 
 	const fileRepository = new FileRepository(db, 'files');
 	const ruleRepository = new RuleRepository(db, 'rules');
 	const optimizationRepository = new OptimizationRepository(db, 'optimizations');
-	const presetRepository = new PresetRepository(db, 'presets');
-	const presetRuleRepository = new PresetRuleRepository(db, 'preset-rules');
+	const presetRepository = new PresetRepository(db2, 'presets');
+	const presetRuleRepository = new PresetRuleRepository(db2, 'preset-rules');
 
 	const core = coreComposition({
 		config: {
