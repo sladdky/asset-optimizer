@@ -1,6 +1,6 @@
 import fs from 'fs/promises';
 import svgo from 'svgo';
-import { AssetOptimizerRuleDef } from '../types';
+import { AssetOptimizerRuleDef, OptimizationError } from '../types';
 
 const ruleDef: AssetOptimizerRuleDef = {
 	ruleName: 'svgAuto',
@@ -10,10 +10,17 @@ const ruleDef: AssetOptimizerRuleDef = {
 	},
 	async optimize({ inputPath, createOptMeta: createOptMeta }) {
 		const data = await fs.readFile(inputPath);
-		const { data: buffer } = svgo.optimize(data.toString());
-
 		const optMeta = createOptMeta();
-		await fs.writeFile(optMeta.tempPath, buffer);
+
+		try {
+			const { data: buffer } = svgo.optimize(data.toString());
+			await fs.writeFile(optMeta.tempPath, buffer);
+		} catch (error) {
+			if (error instanceof Error && error.name === 'SvgoParserError') {
+				throw new OptimizationError(error.message);
+			}
+			throw error;
+		}
 
 		return {
 			optimizations: [optMeta],
