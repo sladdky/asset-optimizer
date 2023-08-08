@@ -62,6 +62,11 @@ export function runOptimizationForRuleComposition({ inputCwd, outputCwd, tempCwd
 				);
 			}
 
+			if (!components['ruleRepository'].findById(rule.id)) {
+				//optimization ended but meanwhile rule was deleted...
+				return
+			}
+
 			for (const metaOptimization of meta.optimizations) {
 				const outputPath = path.join(outputCwd, metaOptimization.relativePath);
 				await fs.mkdir(path.dirname(outputPath), {
