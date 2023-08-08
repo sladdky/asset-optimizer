@@ -1,5 +1,5 @@
 import sharp, { FitEnum } from 'sharp';
-import { AssetOptimizerRuleDef } from '../types';
+import { AssetOptimizerRuleDef, OptimizationError } from '../types';
 import { AssetOptimizerOptimizationMeta } from '../types';
 import { array, string, object, number } from 'yup';
 
@@ -32,49 +32,57 @@ const ruleDef: AssetOptimizerRuleDef = {
 	},
 	async optimize({ inputPath, createOptMeta: createOptMeta, data }) {
 		const optMetas: AssetOptimizerOptimizationMeta[] = [];
-		const { size: rawSize, strategy, extract, variants: rawVariants } = data;
-		const sharpOrigFile = sharp(inputPath);
+		try {
+			const { size: rawSize, strategy, extract, variants: rawVariants } = data;
+			const sharpOrigFile = sharp(inputPath);
 
-		const getSizeFromOrigFile = async () => {
-			const metadata = await sharpOrigFile.metadata();
-			return {
-				width: metadata.width ?? 0,
-				height: metadata.height ?? 0,
+			const getSizeFromOrigFile = async () => {
+				const metadata = await sharpOrigFile.metadata();
+				return {
+					width: metadata.width ?? 0,
+					height: metadata.height ?? 0,
+				};
 			};
-		};
 
-		const size = parseSize(rawSize) || (await getSizeFromOrigFile());
+			const size = parseSize(rawSize) || (await getSizeFromOrigFile());
 
-		if (strategy === 'extract' && extract) {
-			await sharpOrigFile.extract(extract);
-			await sharpOrigFile.toBuffer({ resolveWithObject: true });
-		}
-		const variants = rawVariants.map((rawVariant) => parseVariant(rawVariant, size));
-
-		const STRATEGIES: Record<string, keyof FitEnum> = {
-			exact: 'cover',
-			fit: 'inside',
-			extract: 'cover',
-		};
-		const promises = variants.map(async ({ width, height, postfix }) => {
-			if (!width && !height) {
-				console.log('skip');
-				//skip resize, width or height = 0
-				return;
+			if (strategy === 'extract' && extract) {
+				await sharpOrigFile.extract(extract);
+				await sharpOrigFile.toBuffer({ resolveWithObject: true });
 			}
-			const optMeta = createOptMeta({
-				name: (name) => `${name}${postfix}`,
-				ext: (ext) => ext.toLowerCase(),
+			const variants = rawVariants.map((rawVariant) => parseVariant(rawVariant, size));
+
+			const STRATEGIES: Record<string, keyof FitEnum> = {
+				exact: 'cover',
+				fit: 'inside',
+				extract: 'cover',
+			};
+			const promises = variants.map(async ({ width, height, postfix }) => {
+				if (!width && !height) {
+					console.log('skip');
+					//skip resize, width or height = 0
+					return;
+				}
+				const optMeta = createOptMeta({
+					name: (name) => `${name}${postfix}`,
+					ext: (ext) => ext.toLowerCase(),
+				});
+
+				const sharpFile = sharpOrigFile.clone();
+
+				await sharpFile.resize({ width, height, fit: STRATEGIES[strategy] });
+				await sharpFile.toFile(optMeta.tempPath);
+				optMetas.push(optMeta);
 			});
 
-			const sharpFile = sharpOrigFile.clone();
+			await Promise.all(promises);
+		} catch (error) {
+			if (error instanceof Error) {
+				throw new OptimizationError(error.message);
+			}
+			throw error;
+		}
 
-			await sharpFile.resize({ width, height, fit: STRATEGIES[strategy] });
-			await sharpFile.toFile(optMeta.tempPath);
-			optMetas.push(optMeta);
-		});
-
-		await Promise.all(promises);
 		return {
 			optimizations: optMetas,
 		};

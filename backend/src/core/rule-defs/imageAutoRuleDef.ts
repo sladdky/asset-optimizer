@@ -8,20 +8,27 @@ const ruleDef: AssetOptimizerRuleDef = {
 		return {};
 	},
 	async optimize({ inputPath, createOptMeta: createOptMeta }) {
-		const sharpedFile = sharp(inputPath, { failOnError: false });
-
 		const optMeta = createOptMeta({
 			ext: (ext) => ext.toLowerCase(),
 		});
+		try {
 
-		await new Promise<void>((resolve, reject) => {
-			sharpedFile.toFile(optMeta.tempPath, (error) => {
-				if (error) {
-					reject(new OptimizationError(error.message));
-				}
-				resolve();
+			const sharpedFile = sharp(inputPath, { failOnError: false });
+
+			await new Promise<void>((resolve, reject) => {
+				sharpedFile.toFile(optMeta.tempPath, (error) => {
+					if (error) {
+						reject(new OptimizationError(error.message));
+					}
+					resolve();
+				});
 			});
-		});
+		} catch (error) {
+			if (error instanceof Error) {
+				throw new OptimizationError(error.message);
+			}
+			throw error;
+		}
 
 		return {
 			optimizations: [optMeta],
