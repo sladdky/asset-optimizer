@@ -1,4 +1,5 @@
 import { PresetRuleRepository } from '../../core/repositories';
+import { log } from '../../logger'
 import { AssetOptimizerPresetRule, Response } from '../../types';
 
 type Props = {
@@ -13,7 +14,13 @@ export function createPresetRuleHandlers({ components }: Props) {
 			components['presetRuleRepository'].deleteById(id);
 		},
 		updatePresetRule(presetRule: AssetOptimizerPresetRule) {
-			components['presetRuleRepository'].update(presetRule);
+			const newPresetRule = components['presetRuleRepository'].findById(presetRule.id)
+			if (!newPresetRule) {
+				log('CORE', `Trying to update non-existing presetRule with id: ${presetRule.id}`)
+				return
+			}
+			newPresetRule.data = presetRule.data
+			components['presetRuleRepository'].update(newPresetRule);
 		},
 		listPresetRule(callback: (res: Response<AssetOptimizerPresetRule[]>) => void) {
 			callback({
