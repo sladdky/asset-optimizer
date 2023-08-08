@@ -20,15 +20,16 @@ type Props = {
 //
 export function watchRuleBeforeUpdateComposition({ ruleDefs, components }: Props) {
 	return () => {
-		components['ruleRepository'].on('before-update', ({ entity: rule }: { entity: AssetOptimizerRule }) => {
+		components['ruleRepository'].on('before-update', (rule: AssetOptimizerRule) => {
 			const ruleDef = ruleDefs.find((ruleDef) => ruleDef.ruleName === rule.ruleName);
 			rule.data = ruleDef?.processData(rule.data);
 			return rule;
 		});
 
-		components['ruleRepository'].on('before-update', ({ entity: rule }: { entity: AssetOptimizerRule }) => {
-			//probably doesnt work as expected, findById returns already changed rule
-			const oldRule = components['ruleRepository'].findById(rule.id);
+		components['ruleRepository'].on('before-update', (rule: AssetOptimizerRule) => {
+			//@todo get previous version of rule object before update because find,findById will get already updated version...
+			const oldRule = { ...rule };
+
 			if (oldRule && JSON.stringify(rule.data) !== JSON.stringify(oldRule.data)) {
 				components['optimizationRepository'].deleteWhere({
 					query: {

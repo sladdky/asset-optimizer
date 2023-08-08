@@ -99,15 +99,16 @@ export default class Repository<T extends IEntity> extends Emitter implements IR
 		return this.collection.insert(newEntities);
 	}
 
-	public update(entity: T, oldEntity?: T): boolean {
-		entity = this.emit('before-update', {
-			entity,
-			oldEntity,
-		});
+	public update(entity: T): boolean {
+		entity = this.emit('before-update', entity);
 		try {
 			this.collection.update(entity);
 		} catch (error) {
-			log('CORE', 'Couldnt update document that is not in collection.', 'warning');
+			if (error instanceof Error) {
+				log('CORE', error.message ?? 'Error updating entity in collection', 'warning');
+				return false
+			}
+			throw error
 		}
 		return true;
 	}

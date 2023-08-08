@@ -16,12 +16,6 @@ type Props = {
 export function watchPresetRuleUpdateComposition({ components }: Props) {
 	return () => {
 		components['presetRuleRepository'].on('update', (presetRule: AssetOptimizerPresetRule) => {
-			const preset = components['presetRepository'].findById(presetRule.presetId);
-			if (!preset) {
-				console.log('Invalid presetId on presetrule:');
-				return;
-			}
-
 			const rules = components['ruleRepository'].find({
 				query: {
 					presetRuleId: {
@@ -29,11 +23,13 @@ export function watchPresetRuleUpdateComposition({ components }: Props) {
 					},
 				},
 			});
+
 			rules.forEach((rule) => {
 				rule.state = '';
 				rule.data = presetRule.data;
-				components['ruleRepository'].update(rule);
 			});
+
+			components['ruleRepository'].updateMany(rules);
 		});
 	};
 }
