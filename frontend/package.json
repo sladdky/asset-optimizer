@@ -17,6 +17,7 @@
 		"yup": "^1.2.0"
 	},
 	"devDependencies": {
+		"@types/lodash": "^4.14.202",
 		"@types/ramda": "^0.29.2",
 		"@typescript-eslint/eslint-plugin": "^5.4.0",
 		"@typescript-eslint/parser": "^5.4.0",

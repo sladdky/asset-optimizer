@@ -1,6 +1,7 @@
 import { DeepReadonly, Ref, UnwrapNestedRefs } from 'vue'
 
 export type Uploader = {
+	updateOptions: (options: Partial<UploaderOptions>) => void
 	ufiles: DeepReadonly<UnwrapNestedRefs<Ref<UFile[]>>>
 	addFiles: (files: File[]) => void
 	removeUFileByUid: (uid: string) => void
@@ -18,7 +19,15 @@ export type Upload = {
 	size: number
 }
 
+export type UploaderOptions = {
+	url: string
+}
+
 export type WorkerListeningMessage =
+	| {
+			action: 'UPDATE_OPTIONS'
+			data: Partial<UploaderOptions>
+	  }
 	| {
 			action: 'REMOVE_FILE'
 			data: string

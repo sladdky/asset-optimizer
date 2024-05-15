@@ -1,4 +1,4 @@
-import { reactive, ref } from 'vue'
+import { ref } from 'vue'
 import { createUploaderComposition } from '../compositions/createUploaderComposition'
 import { createVUploaderComposition } from '../compositions/createVUploaderComposition'
 

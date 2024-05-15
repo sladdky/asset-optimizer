@@ -1,8 +1,9 @@
 import { AssetOptimizerCoreConfig, AssetOptimizerRuleDef } from './types';
 import { FileRepository, OptimizationRepository, RuleRepository, PresetRepository, PresetRuleRepository } from './repositories';
 import { watchFsFilesComposition, syncComposition, watchForOptimizationComposition, watchRepositoriesComposition } from './compositions';
-import { copyRuleDef, imageAutoRuleDef, imageCropRuleDef, svgAutoRuleDef, videoAutoRuleDef } from './rule-defs';
+import { copyRuleDef, imageAutoRuleDef, imageCropRuleDef, imageFullCropRuleDef, svgAutoRuleDef, videoAutoRuleDef, videoCropRuleDef } from './rule-defs';
 import { log } from '../logger';
+import { calculateTransformInfo } from './utils/calculateTransformInfo'
 
 type Props = {
 	config: Pick<AssetOptimizerCoreConfig, 'inputCwd' | 'outputCwd' | 'tempCwd'> & Partial<AssetOptimizerCoreConfig>;
@@ -32,12 +33,30 @@ export function coreComposition({ config, components }: Props) {
 
 	addRuleDef(imageAutoRuleDef);
 	addRuleDef(imageCropRuleDef);
+	addRuleDef(imageFullCropRuleDef);
 	addRuleDef(videoAutoRuleDef);
+	addRuleDef(videoCropRuleDef);
 	addRuleDef(svgAutoRuleDef);
 	addRuleDef(copyRuleDef);
 
 	return {
 		start: async () => {
+
+			// const x = calculateTransformInfo({
+			// 	meta: {
+			// 		width: 1000,
+			// 		height: 2000,
+			// 		rotation: '0'
+			// 	},
+		// 	desiredSize: {
+			// 		width: 1920,
+			// 		height: 1080
+			// 	},
+			// 	strategy: 'exact',
+			// 	isShrinkOnly: true
+			// })
+			// console.log(x)
+
 			log('CORE', 'Synchronizing filesystem...');
 			const sync = syncComposition({
 				inputCwd: config.inputCwd,

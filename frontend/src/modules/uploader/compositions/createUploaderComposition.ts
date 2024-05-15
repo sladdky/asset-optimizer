@@ -1,4 +1,4 @@
-import { WorkerOutgoingMessage, WorkerListeningMessage, UFile } from '../types'
+import { WorkerOutgoingMessage, WorkerListeningMessage, UFile, UploaderOptions } from '../types'
 import { nanoid } from 'nanoid'
 import { readonly, ref } from 'vue'
 import { Uploader } from '../types'
@@ -31,6 +31,13 @@ export function createUploaderComposition({ worker }: Props) {
 			send({
 				action: 'REMOVE_FILE',
 				data: uid,
+			})
+		}
+
+		const updateOptions = (options: Partial<UploaderOptions>) => {
+			send({
+				action: 'UPDATE_OPTIONS',
+				data: options
 			})
 		}
 
@@ -73,6 +80,7 @@ export function createUploaderComposition({ worker }: Props) {
 		}
 
 		return {
+			updateOptions,
 			ufiles: readonly(ufiles),
 			addFiles,
 			removeUFileByUid,

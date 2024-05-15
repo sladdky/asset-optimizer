@@ -1,41 +1,43 @@
-import ffmpegInstaller from '@ffmpeg-installer/ffmpeg';
-import ffmpeg from 'fluent-ffmpeg';
-import { AssetOptimizerRuleDef, OptimizationError } from '../types';
+import ffmpegInstaller from '@ffmpeg-installer/ffmpeg'
+import ffmpeg from 'fluent-ffmpeg'
+import path from 'path'
+import { AssetOptimizerRuleDef, OptimizationError } from '../types'
 
-ffmpeg.setFfmpegPath(ffmpegInstaller.path);
+ffmpeg.setFfmpegPath(ffmpegInstaller.path)
 
 const ruleDef: AssetOptimizerRuleDef = {
 	ruleName: 'videoAuto',
 	ext: 'mov|mp4',
 	processData() {
-		return {};
+		return {}
 	},
 	async optimize({ inputPath, createOptMeta: createOptMeta }) {
-		const optMeta = createOptMeta();
+		const optMeta = createOptMeta()
+
 		try {
 			await new Promise<void>((resolve, reject) => {
 				ffmpeg(inputPath)
 					.on('end', () => {
-						resolve();
+						resolve()
 					})
 					.on('error', (error) => {
-						reject(new Error('Error while ffmpeg conversion'));
+						reject(new Error(`Error while ffmpeg conversion. Reason: ${error?.message}`))
 					})
-					.audioBitrate(100)
-					.videoBitrate(200)
+					.audioBitrate(240) //@todo some cool algo to calculate best audiobitrate/videobitrate/fps?
+					.videoBitrate(18000)
 					.output(optMeta.tempPath)
-					.run();
-			});
+					.run()
+			})
 		} catch (error) {
 			if (error instanceof Error) {
-				throw new OptimizationError(error.message);
+				throw new OptimizationError(error.message)
 			}
 		}
 
 		return {
 			optimizations: [optMeta],
-		};
+		}
 	},
-};
+}
 
-export default ruleDef;
+export default ruleDef

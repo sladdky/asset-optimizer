@@ -235,9 +235,12 @@ line(direction = 'horizontal')
         padding 3px 10px
 
     &-ruleName
-        padding-left 25px
         margin-left -25px
+        padding 1px 1px 1px 25px
         flex 0 0 auto
+        width 120px
+        overflow hidden
+        text-overflow ellipsis
 
     &:hover
         .ComputedFile-relativePath

@@ -13,7 +13,7 @@ const ruleDef: AssetOptimizerRuleDef = {
 		});
 		try {
 
-			const sharpedFile = sharp(inputPath, { failOnError: false });
+			const sharpedFile = sharp(inputPath, { failOnError: false }).rotate();
 
 			await new Promise<void>((resolve, reject) => {
 				sharpedFile.toFile(optMeta.tempPath, (error) => {

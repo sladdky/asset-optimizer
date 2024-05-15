@@ -1,7 +1,10 @@
-import sharp, { FitEnum } from 'sharp';
-import { AssetOptimizerRuleDef, OptimizationError } from '../types';
-import { AssetOptimizerOptimizationMeta } from '../types';
-import { array, string, object, number } from 'yup';
+import sharp from 'sharp'
+import { AssetOptimizerRuleDef, OptimizationError } from '../types'
+import { AssetOptimizerOptimizationMeta } from '../types'
+import { string, object } from 'yup'
+import { parseSize } from '../utils/parseSize'
+import { calculateTransformInfo } from '../utils/calculateTransformInfo'
+import { getImageMeta } from '../utils/getImageMeta'
 
 const ruleDef: AssetOptimizerRuleDef = {
 	ruleName: 'imageCrop',
@@ -10,132 +13,60 @@ const ruleDef: AssetOptimizerRuleDef = {
 	processData(data) {
 		const schema = object({
 			size: string().default(''),
-			strategy: string().oneOf(['exact', 'fit', 'extract']).default('exact'),
-			extract: object({
-				width: number().default(19999),
-				height: number().default(19999),
-				top: number().default(0),
-				left: number().default(0),
-			})
-				.when('strategy', (strategy, schema) => {
-					const x = strategy as unknown as string;
-					if (x === 'extract') {
-						return schema.required();
-					}
-					return schema;
-				})
-				.default(undefined),
-			variants: array(string().default('')).default([]),
-		});
+			strategy: string().oneOf(['exact', 'fit']).default('exact'),
+		})
 
-		return schema.cast(data);
+		return schema.cast(data)
 	},
 	async optimize({ inputPath, createOptMeta: createOptMeta, data }) {
-		const optMetas: AssetOptimizerOptimizationMeta[] = [];
+		const optMetas: AssetOptimizerOptimizationMeta[] = []
 		try {
-			const { size: rawSize, strategy, extract, variants: rawVariants } = data;
-			const sharpOrigFile = sharp(inputPath);
+			const { size: rawSize, strategy } = data
 
-			const getSizeFromOrigFile = async () => {
-				const metadata = await sharpOrigFile.metadata();
-				return {
-					width: metadata.width ?? 0,
-					height: metadata.height ?? 0,
-				};
-			};
+			const meta = await getImageMeta(inputPath)
+			const desiredSize = parseSize(rawSize)
 
-			const size = parseSize(rawSize) || (await getSizeFromOrigFile());
+			const transInfo = calculateTransformInfo({
+				meta,
+				desiredSize,
+				strategy,
+				isRotationIncluded: true,
+				isShrinkOnly: false
+			})
 
-			if (strategy === 'extract' && extract) {
-				await sharpOrigFile.extract(extract);
-				await sharpOrigFile.toBuffer({ resolveWithObject: true });
+			const optMeta = createOptMeta({
+				name: (name) => `${name}-${strategy}-${rawSize.toLowerCase()}`,
+				ext: (ext) => ext.toLowerCase(),
+			})
+
+			const sharpFile = sharp(inputPath, {
+				failOn: 'truncated'
+			})
+
+			sharpFile.rotate() //apply meta rotation
+
+			if (transInfo.extract) {
+				sharpFile.extract(transInfo.extract)
 			}
-			const variants = rawVariants.map((rawVariant) => parseVariant(rawVariant, size));
 
-			const STRATEGIES: Record<string, keyof FitEnum> = {
-				exact: 'cover',
-				fit: 'inside',
-				extract: 'cover',
-			};
-			const promises = variants.map(async ({ width, height, postfix }) => {
-				if (!width && !height) {
-					console.log('skip');
-					//skip resize, width or height = 0
-					return;
-				}
-				const optMeta = createOptMeta({
-					name: (name) => `${name}${postfix}`,
-					ext: (ext) => ext.toLowerCase(),
-				});
+			if (transInfo.size) {
+				sharpFile.resize(transInfo.size)
+			}
 
-				const sharpFile = sharpOrigFile.clone();
+			await sharpFile.toFile(optMeta.tempPath)
 
-				await sharpFile.resize({ width, height, fit: STRATEGIES[strategy] });
-				await sharpFile.toFile(optMeta.tempPath);
-				optMetas.push(optMeta);
-			});
-
-			await Promise.all(promises);
+			optMetas.push(optMeta)
 		} catch (error) {
 			if (error instanceof Error) {
-				throw new OptimizationError(error.message);
+				throw new OptimizationError(error.message)
 			}
-			throw error;
+			throw error
 		}
 
 		return {
 			optimizations: optMetas,
-		};
+		}
 	},
-};
-
-function parseSize(strInput: string) {
-	if (!strInput) {
-		return null;
-	}
-
-	const [rawWidth = '99999', rawHeight = '99999'] = strInput.split('x');
-
-	return {
-		width: parseInt(rawWidth),
-		height: parseInt(rawHeight),
-	};
 }
 
-function parseVariant(
-	strInput: string,
-	size: {
-		width: number;
-		height: number;
-	}
-) {
-	let postfix = '';
-	let width, height;
-
-	if (strInput.endsWith('w')) {
-		width = parseInt(strInput.split('w')[0]);
-		height = width * (size.height / size.width);
-		postfix = `-${width}w`;
-	} else if (strInput.endsWith('h')) {
-		height = parseInt(strInput.split('h')[0]);
-		width = height * (size.width / size.height);
-		postfix = `-${height}h`;
-	} else if (strInput.endsWith('x')) {
-		const modifier = parseFloat(strInput.split('x')[0]);
-		width = Math.ceil(modifier * size.width);
-		height = Math.ceil(modifier * size.height);
-		postfix = modifier !== 1 ? `@${modifier.toString().replace('.', '_')}x` : ``;
-	} else {
-		const [rawWidth = '0', rawHeight = '0'] = strInput.split('x');
-		width = parseInt(rawWidth);
-		height = parseInt(rawHeight);
-	}
-
-	return {
-		width,
-		height,
-		postfix,
-	};
-}
-
-export default ruleDef;
+export default ruleDef

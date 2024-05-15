@@ -1,5 +1,5 @@
 import { createQueue } from '../common/createQueue'
-import { UFile, Upload, WorkerListeningMessage, WorkerOutgoingMessage } from '../types'
+import { UFile, Upload, UploaderOptions, WorkerListeningMessage, WorkerOutgoingMessage } from '../types'
 
 class UserUploadAbortedError extends Error {}
 
@@ -10,6 +10,16 @@ function send(message: WorkerOutgoingMessage) {
 const createUploader = () => {
 	const _ufiles: UFile[] = []
 	let shouldCheckUploadingUfiles = false
+	let options: UploaderOptions = {
+		url: ''
+	}
+
+	const updateOptions = (newOptions: Partial<UploaderOptions>) => {
+		options = {
+			...options,
+			...newOptions
+		}
+	}
 
 	const onUnqueue = async (uid: UFile['uid']) => {
 		const ufile = _ufiles.find((_ufile) => _ufile.uid === uid)
@@ -69,7 +79,7 @@ const createUploader = () => {
 	const requestFileUpload = (ufile: UFile) => {
 		return new Promise<Upload>((resolve, reject) => {
 			const xhr = new XMLHttpRequest()
-			xhr.open('POST', 'http://localhost:3011/upload-register')
+			xhr.open('POST', `${options.url}/upload-register`)
 			xhr.setRequestHeader('Content-Type', 'application/json')
 			xhr.onloadend = (event) => {
 				if (xhr.status !== 200) {
@@ -96,7 +106,7 @@ const createUploader = () => {
 	const uploadChunk = (token: string, chunkIndex: number, chunk: Blob, onProgress: (bytesTransfered: number) => void) => {
 		return new Promise<void>((resolve, reject) => {
 			const xhr = new XMLHttpRequest()
-			xhr.open('POST', `http://localhost:3011/upload/${token}/${chunkIndex}`)
+			xhr.open('POST', `${options.url}/upload/${token}/${chunkIndex}`)
 			xhr.onloadend = () => {
 				if (xhr.status !== 200) {
 					//@todo: retry? 1x/2x then give up?
@@ -127,7 +137,7 @@ const createUploader = () => {
 	const requestFileUploadEnd = (token: string) => {
 		return new Promise<void>((resolve, reject) => {
 			const xhr = new XMLHttpRequest()
-			xhr.open('POST', `http://localhost:3011/upload-end/${token}`)
+			xhr.open('POST', `${options.url}/upload-end/${token}`)
 			xhr.onloadend = (event) => {
 				if (xhr.status !== 200) {
 					//@todo:  retry?
@@ -180,6 +190,7 @@ const createUploader = () => {
 	})
 
 	return {
+		updateOptions,
 		getUFiles,
 		addUFiles,
 		removeUFileByUid,
@@ -191,6 +202,9 @@ self.onmessage = function (event) {
 	const message: WorkerListeningMessage = event.data
 
 	switch (message.action) {
+		case 'UPDATE_OPTIONS':
+			uploader.updateOptions(message.data)
+			break
 		case 'REMOVE_FILE':
 			uploader.removeUFileByUid(message.data)
 			break
